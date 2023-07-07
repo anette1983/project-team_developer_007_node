@@ -13,7 +13,7 @@ const {
   sendEmail,
 } = require("../helpers");
 
-const { SECRET_KEY } = process.env;
+const { SECRET, BASE_URL } = process.env;
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -22,7 +22,7 @@ const register = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    throw HttpError(409, "Email in use");
+    throw HttpError(409, "Email already in use");
   }
 
   const HashPassword = await bcrypt.hash(password, 10);
@@ -36,16 +36,16 @@ const register = async (req, res) => {
     verificationToken: verificationTokenId,
   });
 
-  const verifyEmail = {
+  const verificationEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="http://localhost:3000/users/verify/${verificationTokenId}">Click verify email</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationTokenId}">Click to verify email</a>`,
   };
 
-  await sendEmail(verifyEmail);
+  await sendEmail(verificationEmail);
 
   res.status(201).json({
-    user: { email: newUser.email, subscription: newUser.subscription },
+    user: { email: newUser.email, name: newUser.name },
   });
 };
 
@@ -76,14 +76,14 @@ const login = async (req, res) => {
     token,
     user: {
       email: user.email,
-      subscription: user.subscription,
+      name: user.name,
     },
   });
 };
 
 const getCurrent = async (req, res) => {
-  const { email, subscription } = req.user;
-  res.json({ email, subscription });
+  const { email, name } = req.user;
+  res.status(200).json({ email, name });
 };
 
 const logout = async (req, res) => {
@@ -93,15 +93,20 @@ const logout = async (req, res) => {
   res.status(204).json({});
 };
 
-const updateSubscriptionUser = async (req, res) => {
-  const { _id } = req.user;
-  const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
+const updateUserSubscription = async (req, res) => {
+  const { _id, subscription } = req.user;
 
-  if (!result) {
-    throw HttpError(404, "Not found");
+  if (subscription) {
+    HttpError(409, "You have already subscribed");
   }
 
-  res.json(result);
+  await User.findByIdAndUpdate(_id, { subscription: true }, { new: true });
+
+  // Відправляєм емейл
+
+  res
+    .status(200)
+    .json({ message: "You successfully subscribed to newsletter" });
 };
 
 const updateAvatar = async (req, res) => {
@@ -117,7 +122,7 @@ const updateAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
-const verificationToken = async (req, res) => {
+const verifyUser = async (req, res) => {
   const { verificationToken } = req.params;
 
   const user = await User.findOne({ verificationToken });
@@ -134,7 +139,7 @@ const verificationToken = async (req, res) => {
   res.json({ message: "Verification successful" });
 };
 
-const resendVerifyToken = async (req, res) => {
+const resendVerificationEmail = async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
@@ -165,8 +170,8 @@ module.exports = {
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
-  updateSubscriptionUser: ctrlWrapper(updateSubscriptionUser),
+  updateUserSubscription: ctrlWrapper(updateUserSubscription),
   updateAvatar: ctrlWrapper(updateAvatar),
-  verificationToken: ctrlWrapper(verificationToken),
-  resendVerifyToken: ctrlWrapper(resendVerifyToken),
+  verifyUser: ctrlWrapper(verifyUser),
+  resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
 };
