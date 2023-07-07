@@ -1,50 +1,40 @@
 const express = require("express");
 
-const {
-  register,
-  login,
-  logout,
-  getCurrent,
-  updateSubscriptionUser,
-  updateAvatar,
-  verificationToken,
-  resendVerifyToken,
-} = require("../../controllers/auth");
+const ctrl = require("../../controllers/auth");
 
 const { validateBody, validateToken, upload } = require("../../middlewares");
 
-const {
-  userRegisterSchema,
-  userLoginSchema,
-  userUpdateSubscrField,
-  verifyEmailSchema,
-} = require("../../models/user");
+const { schemas } = require("../../models/user");
 
 const router = express.Router();
 
-router.post("/register", validateBody(userRegisterSchema), register);
-
-router.post("/login", validateBody(userLoginSchema), login);
-
-router.get("/current", validateToken, getCurrent);
-
-router.post("/logout", validateToken, logout);
-
-router.patch(
-  "/subscription",
-  validateToken,
-  validateBody(userUpdateSubscrField),
-  updateSubscriptionUser
+router.post(
+  "/register",
+  validateBody(schemas.userRegisterSchema),
+  ctrl.register
 );
 
-router.patch("/avatars", validateToken, upload.single("avatar"), updateAvatar);
+router.post("/login", validateBody(schemas.userLoginSchema), ctrl.login);
 
-router.get("/verify/:verificationToken", verificationToken);
+router.get("/current", validateToken, ctrl.getCurrent);
+
+router.post("/logout", validateToken, ctrl.logout);
+
+router.patch("/subscribe", validateToken, ctrl.updateUserSubscription);
+
+router.patch(
+  "/avatars",
+  validateToken,
+  upload.single("avatar"),
+  ctrl.updateAvatar
+);
+
+router.get("/verify/:verificationToken", ctrl.verifyUser);
 
 router.post(
   "/verify",
-  validateBody(verifyEmailSchema, "missing required field email"),
-  resendVerifyToken
+  validateBody(schemas.verifyEmailSchema, "missing required field email"),
+  ctrl.resendVerificationEmail
 );
 
 module.exports = router;
