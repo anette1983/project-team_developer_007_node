@@ -5,6 +5,8 @@ const { nanoid } = require("nanoid");
 const path = require("path");
 const fs = require("fs");
 
+const cloudinary = require('../utils/cloudinary')
+
 const { User } = require("../models/user");
 const {
   HttpError,
@@ -69,7 +71,7 @@ const login = async (req, res) => {
 
   const payload = { id: user._id };
 
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+  const token = jwt.sign(payload, SECRET, { expiresIn: "23h" });
   await User.findByIdAndUpdate(user._id, { token });
 
   res.status(200).json({
@@ -111,12 +113,28 @@ const updateUserSubscription = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { path: tempUpload, originalname } = req.file;
-  await resizeImgAvatar(tempUpload);
   const { _id } = req.user;
-  const newFileName = `${_id}_${originalname}`;
-  const resultUpload = path.join(avatarsDir, newFileName);
-  await fs.rename(tempUpload, resultUpload, () => {});
-  const avatarURL = path.join("avatars", newFileName);
+
+   const uploadRes = await cloudinary.uploader.upload(
+     req.file.path,
+     { upload_preset: "avatars" },
+     function (error, result) {
+       if (error) {
+         return res.status(500).json({
+           message: error,
+         });
+       }
+       return result;
+     }
+   );
+    console.log(uploadRes)
+  // await resizeImgAvatar(tempUpload);
+  // const newFileName = `${_id}_${originalname}`;
+  // const resultUpload = path.join(avatarsDir, newFileName);
+  // await fs.rename(tempUpload, resultUpload, () => {});
+  // const avatarURL = path.join("avatars", newFileName);
+ 
+  const avatarURL =  uploadRes.url
   await User.findByIdAndUpdate(_id, { avatarURL });
 
   res.json({ avatarURL });
