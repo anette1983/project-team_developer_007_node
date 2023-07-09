@@ -4,26 +4,23 @@ const Joi = require("joi");
 const { handleMongooseError } = require("../helpers");
 const { emailRegexp } = require("../constants/user");
 
-const shoppingListSchema = new Schema({
-  _id: false,
-  type: [
-    {
-      ingredientId: {
-        type: Schema.Types.ObjectId,
-        ref: "ingredient",
-      },
-      recipeId: {
-        type: Schema.Types.ObjectId,
-        ref: "recipe",
-      },
-      measure: {
-        type: [String],
-        default: [],
-      },
-    },
-  ],
-  default: [],
-});
+// const shoppingListSchema = new Schema({
+//   _id: false,
+//   type: [
+//     {
+//       ingredientId: {
+//         type: Schema.Types.ObjectId,
+//         ref: "ingredient",
+//       },
+
+//       measure: {
+//         type: [String],
+//         default: [],
+//       },
+//     },
+//   ],
+//   default: [],
+// });
 
 const userSchema = new Schema(
   {
@@ -57,8 +54,25 @@ const userSchema = new Schema(
       required: [true, "Verify token is required"],
     },
     shoppingList: {
-      type: shoppingListSchema,
+      _id: false,
+
+      type: [
+        {
+          ingredientId: {
+            type: Schema.Types.ObjectId,
+            ref: "ingredient",
+          },
+
+          measure: {
+            type: [String],
+            default: [],
+          },
+        },
+      ],
+      default: [],
+      required: true,
     },
+
     subscription: {
       type: Boolean,
       default: false,

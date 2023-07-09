@@ -1,7 +1,6 @@
 const { Recipe } = require("../models/recipe");
-
+const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const mongoose = require("mongoose");
 const { Ingredient } = require("../models/ingredient");
 
 const getCategories = async (req, res) => {};
@@ -59,39 +58,22 @@ const getRecipesByTitle = async (req, res) => {
 const getRecipesByIngredient = async (req, res) => {
   const { query } = req.query;
   console.log(query);
-  const ingredients = await Ingredient.find(
-    {
-      name: { $regex: query, $options: "i" },
-    },
-    "id"
-  );
-  // const newArr = await ingredients.map(({ _id }) => ({ id: _id }));
+  const ingredients = await Ingredient.aggregate([
+    { $match: { name: { $regex: query, $options: "i" } } },
+    { $project: { id: 0, name: 0, desc: 0, img: 0 } },
+  ]);
+  console.log(ingredients);
   const data = await Recipe.find(
     {
-      // ingredients: {
-      //   $elemMatch: {
-      "ingredients.ingredientId": "640c2dd963a319ea671e3111",
-      // },
-    }
+      ingredients: {
+        $elemMatch: {
+          $or: ingredients,
+        },
+      },
+    },
 
-    // ["category", "title", "_id"]
+    ["category", "title", "_id"]
   );
-  // const ObjectId = mongoose.Types.ObjectId;
-
-  // const data = await Recipe.find(
-  //   {
-  //     ingredients: {
-  //       $elemMatch: {
-  //         id: ObjectId(query),
-  //       },
-  //     },
-  //   },
-  //   ["preview", "title"],
-  //   {
-  //     skip,
-  //     limit,
-  //   }
-  // );
   res.json(data);
 };
 
@@ -135,29 +117,100 @@ const getFavorite = async (req, res) => {
 
 const addToFavorite = async (req, res) => {
   const id = req.user._id;
-  const recipeId = req.body;
+  const idToString = req.user._id.toString();
+  const { recipeId } = req.body;
+  const recipe = await Recipe.findById(recipeId);
+  const isRecipeLiked = await recipe.usersWhoLiked
+    .map((obj) => obj.userId.toString())
+    .includes(idToString);
+
+  if (isRecipeLiked) {
+    throw HttpError(409, "recipe already liked");
+  }
   await Recipe.findByIdAndUpdate(recipeId, {
-    $push: { usersWhoLiked: { id } },
+    $push: { usersWhoLiked: { userId: id } },
   });
   res.json(201, "recipe added");
 };
 
 const removeFromFavorite = async (req, res) => {
   const id = req.user._id;
-  const recipeId = req.body;
+  const idToString = req.user._id.toString();
+  const { recipeId } = req.body;
+  const recipe = await Recipe.findById(recipeId);
+  const isRecipeLiked = await recipe.usersWhoLiked
+    .map((obj) => obj.userId.toString())
+    .includes(idToString);
+
+  if (!isRecipeLiked) {
+    throw HttpError(409, "can not remove from favorite");
+  }
   await Recipe.findByIdAndUpdate(recipeId, {
-    $pull: { usersWhoLiked: { id } },
+    $pull: { usersWhoLiked: { userId: id } },
   });
   res.json(201, "recipe deleted");
 };
 
-const getPopular = async (req, res) => {};
+const getPopular = async (req, res) => {
+  const data = await Recipe.aggregate([
+    {
+      $set: {
+        totalAdded: {
+          $size: "$usersWhoLiked",
+        },
+      },
+    },
+    {
+      $sort: {
+        totalAdded: -1,
+      },
+    },
+    { $project: { totalAdded: 1, title: 1, preview: 1 } },
+  ]);
+
+  res.json(data);
+};
+
+const getShoppingList = async (req, res) => {
+  const id = req.user._id;
+  const data = await User.findById(id, "shoppingList");
+  res.json(data);
+};
+const addToShoppingList = async (req, res) => {
+  const id = req.user._id;
+  const { ingredientId, measure } = req.body;
+  // const shoppingList = await User.find(id, "shoppingList");
+
+  const data = await User.findByIdAndUpdate(
+    id,
+    {
+      $push: { shoppingList: { ingredientId, measure } },
+    },
+
+    { new: true }
+  );
+  res.json(data.shoppingList);
+};
+const removeFromShoppingList = async (req, res) => {
+  const id = req.user._id;
+  const { ingredientId } = req.body;
+  // const shoppingList = await User.find(id, "shoppingList");
+
+  const data = await User.findByIdAndUpdate(
+    id,
+    {
+      $pull: { shoppingList: { ingredientId } },
+    },
+
+    { new: true }
+  );
+  res.json(data.shoppingList);
+};
 
 module.exports = {
   getCategories: ctrlWrapper(getCategories),
   getMainPageRecipes: ctrlWrapper(getMainPageRecipes),
   getRecipesByQuery: ctrlWrapper(getRecipesByQuery),
-  // getRecipeById: ctrlWrapper(getRecipeById),
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
   getOwnrecipes: ctrlWrapper(getOwnrecipes),
@@ -167,4 +220,7 @@ module.exports = {
   addToFavorite: ctrlWrapper(addToFavorite),
   removeFromFavorite: ctrlWrapper(removeFromFavorite),
   getPopular: ctrlWrapper(getPopular),
+  getShoppingList: ctrlWrapper(getShoppingList),
+  addToShoppingList: ctrlWrapper(addToShoppingList),
+  removeFromShoppingList: ctrlWrapper(removeFromShoppingList),
 };
