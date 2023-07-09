@@ -7,17 +7,18 @@ const { validateToken } = require("../../middlewares");
 
 const router = express.Router();
 
+
 router.get("/category-list", validateToken, getCategoriesList);
 
-router.get("/main-page", validateToken, ctrl.getMainPageRecipes);
+router.get("/main-page", ctrl.getMainPageRecipes);
 
-router.get("/:category", validateToken, ctrl.getRecipesByCategory);
+router.get("/category/:categoryName", ctrl.getRecipesByCategory);
 
-router.get("/:recipeId", validateToken, ctrl.getRecipeById);
+router.get("/:recipeId", ctrl.getRecipeById);
 
-router.get("/search", validateToken, ctrl.getRecipesByTitle);
+router.get("/search/:title", ctrl.getRecipesByTitle);
 
-router.get("/ingredients", validateToken, ctrl.getRecipesByIngredient);
+router.get("/ingredients/:ingredientName", ctrl.getRecipesByIngredient);
 
 router.get("/ingredients/list", validateToken, getIngredientsList);
 
@@ -25,7 +26,7 @@ router.get("/own-recipes", validateToken, ctrl.getOwnrecipes);
 
 router.post("/own-recipes", validateToken, ctrl.addRecipe);
 
-router.delete("/own-recipes", validateToken, ctrl.deleteRecipe);
+router.delete("/own-recipes/:id", validateToken, ctrl.deleteRecipe);
 
 router.get("/favorite", validateToken, ctrl.getFavorite);
 
