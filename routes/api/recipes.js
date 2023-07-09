@@ -7,7 +7,7 @@ const { validateToken } = require("../../middlewares");
 
 const router = express.Router();
 
-router.get("/category-list", validateToken, ctrl.getCategoriesList);
+router.get("/category-list", validateToken, getCategoriesList);
 
 router.get("/main-page", validateToken, ctrl.getMainPageRecipes);
 

@@ -1,25 +1,14 @@
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
 
-const { GMAIL_PASS, GMAIL_NAME } = process.env;
+const { SENDGRID_API_KEY } = process.env;
 
-const nodemailConfig = {
-  pool: true,
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // use TLS
-  auth: {
-    user: GMAIL_NAME,
-    pass: GMAIL_PASS,
-  },
-};
+sgMail.setApiKey(SENDGRID_API_KEY);
 
-const transport = nodemailer.createTransport(nodemailConfig);
-
-async function sendEmail(data) {
-  const email = { ...data, from: GMAIL_NAME };
-  await transport.sendMail(email);
+const sendEmail = async (data) => {
+  const email = { ...data, from: "infernokgg@gmail.com" };
+  await sgMail.send(email);
   return true;
-}
+};
 
 module.exports = sendEmail;
