@@ -2,14 +2,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { nanoid } = require("nanoid");
-const path = require("path");
+// const path = require("path");
 const fs = require("fs");
+
+const cloudinary = require("../utils/cloudinary");
 
 const { User } = require("../models/user");
 const {
   HttpError,
   ctrlWrapper,
-  resizeImgAvatar,
   sendEmail,
   createVerificationEmail,
   createSubscriptionEmail,
@@ -17,7 +18,7 @@ const {
 
 const { SECRET, BASE_URL } = process.env;
 
-const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+// const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -130,13 +131,23 @@ const updateUserSubscription = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const { path: tempUpload, originalname } = req.file;
-  await resizeImgAvatar(tempUpload);
   const { _id } = req.user;
-  const newFileName = `${_id}_${originalname}`;
-  const resultUpload = path.join(avatarsDir, newFileName);
-  await fs.rename(tempUpload, resultUpload, () => {});
-  const avatarURL = path.join("avatars", newFileName);
+  const uploadRes = await cloudinary.uploader.upload(
+    req.file.path,
+    { upload_preset: "avatars", use_filename: true, public_id: `${_id}` },
+    function (error, result) {
+      if (error) {
+        return res.status(500).json({
+          message: error,
+        });
+      }
+      return result;
+    }
+  );
+
+  fs.rm(req.file.path, { force: true }, () => {});
+
+  const avatarURL = uploadRes.url;
   await User.findByIdAndUpdate(_id, { avatarURL });
 
   res.json({ avatarURL });

@@ -6,6 +6,7 @@ const { validateBody, validateToken, upload } = require("../../middlewares");
 
 const { schemas } = require("../../models/user");
 
+
 const router = express.Router();
 
 router.post(
