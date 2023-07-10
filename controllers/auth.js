@@ -153,6 +153,37 @@ const updateAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
+
+const upadateUserInfo = async (req, res) => {
+  // console.log(req.user._id)
+  const id = req.user._id;
+  
+  if (req.file) {
+    const uploadRes = await cloudinary.uploader.upload(
+      req.file.path,
+      { upload_preset: "avatars", use_filename: true, public_id: `${id}` },
+      function (error, result) {
+        if (error) {
+          return res.status(500).json({
+            message: error,
+          });
+        }
+        return result;
+      }
+    );
+    const avatarURL = uploadRes.url;
+    fs.rm(req.file.path, { force: true }, () => {});
+    await User.findByIdAndUpdate(id, { avatarURL });
+  }
+  if (req.body.name) {
+    await User.findByIdAndUpdate(id, {name: req.body.name})
+  }
+  if (req.body.email) {
+    await User.findByIdAndUpdate(id, {email: req.body.email})
+  }
+  res.status(200).json({message: `Updated`})
+  
+}
 const verifyUser = async (req, res) => {
   const { verificationToken } = req.params;
 
@@ -208,6 +239,7 @@ module.exports = {
   logout: ctrlWrapper(logout),
   updateUserSubscription: ctrlWrapper(updateUserSubscription),
   updateAvatar: ctrlWrapper(updateAvatar),
+  upadateUserInfo: ctrlWrapper(upadateUserInfo),
   verifyUser: ctrlWrapper(verifyUser),
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
 };
