@@ -61,7 +61,7 @@ const recipeSchema = new Schema(
     ingredients: {
       type: [
         {
-          ingredientId: {
+          id: {
             type: Schema.Types.ObjectId,
             ref: "ingredient",
           },
@@ -73,7 +73,7 @@ const recipeSchema = new Schema(
       ],
       required: [true, "Set ingredients for recipe"],
     },
-    usersWhoLiked: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    usersWhoLiked: { type: Array },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",
