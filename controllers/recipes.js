@@ -2,6 +2,7 @@ const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
+const { default: mongoose } = require("mongoose");
 
 const getCategories = async (req, res) => {};
 
@@ -38,7 +39,7 @@ const getRecipesByQuery = async (req, res) => {
 
 const getRecipesByTitle = async (req, res) => {
   const { query } = req.query;
-  console.log(req.params);
+  console.log(req.query);
 
   const data = await Recipe.find(
     {
@@ -91,7 +92,7 @@ const addRecipe = async (req, res) => {
 };
 
 const deleteRecipe = async (req, res) => {
-  const id = req.body;
+  const { id } = req.body;
   const result = await Recipe.deleteOne({ _id: id });
   if (result.deletedCount === 0) {
     throw HttpError(404, "Not found");
@@ -100,11 +101,12 @@ const deleteRecipe = async (req, res) => {
 };
 
 const getFavorite = async (req, res) => {
-  const { id } = req.query;
+  const id = req.user._id;
+  const ObjectId = mongoose.Types.ObjectId;
   const data = await Recipe.find(
     {
       usersWhoLiked: {
-        $elemMatch: { userId: id },
+        $elemMatch: { userId: ObjectId(id) },
       },
     },
     ["title", "description", "preview", "time"]
