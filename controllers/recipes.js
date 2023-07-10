@@ -92,8 +92,8 @@ const addRecipe = async (req, res) => {
 };
 
 const deleteRecipe = async (req, res) => {
-  const { id } = req.body;
-  const result = await Recipe.deleteOne({ _id: id });
+  const { recipeId } = req.params;
+  const result = await Recipe.deleteOne({ _id: recipeId });
   if (result.deletedCount === 0) {
     throw HttpError(404, "Not found");
   }
@@ -138,7 +138,7 @@ const addToFavorite = async (req, res) => {
 const removeFromFavorite = async (req, res) => {
   const id = req.user._id;
   const idToString = req.user._id.toString();
-  const { recipeId } = req.body;
+  const { recipeId } = req.params;
   const recipe = await Recipe.findById(recipeId);
   const isRecipeLiked = await recipe.usersWhoLiked
     .map((obj) => obj.userId.toString())

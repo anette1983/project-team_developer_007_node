@@ -153,11 +153,10 @@ const updateAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
-
 const upadateUserInfo = async (req, res) => {
   // console.log(req.user._id)
   const id = req.user._id;
-  
+
   if (req.file) {
     const uploadRes = await cloudinary.uploader.upload(
       req.file.path,
@@ -176,14 +175,13 @@ const upadateUserInfo = async (req, res) => {
     await User.findByIdAndUpdate(id, { avatarURL });
   }
   if (req.body.name) {
-    await User.findByIdAndUpdate(id, {name: req.body.name})
+    await User.findByIdAndUpdate(id, { name: req.body.name });
   }
   if (req.body.email) {
-    await User.findByIdAndUpdate(id, {email: req.body.email})
+    await User.findByIdAndUpdate(id, { email: req.body.email });
   }
-  res.status(200).json({message: `Updated`})
-  
-}
+  res.status(200).json({ message: `Updated` });
+};
 const verifyUser = async (req, res) => {
   const { verificationToken } = req.params;
 
