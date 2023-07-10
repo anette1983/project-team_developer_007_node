@@ -11,6 +11,8 @@ const {
   ctrlWrapper,
   resizeImgAvatar,
   sendEmail,
+  createVerificationEmail,
+  createSubscriptionEmail,
 } = require("../helpers");
 
 const { SECRET, BASE_URL } = process.env;
@@ -36,16 +38,22 @@ const register = async (req, res) => {
     verificationToken: verificationTokenId,
   });
 
+  const emailHtml = createVerificationEmail({
+    BASE_URL,
+    email,
+    verificationTokenId,
+  });
+
   const verificationEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationTokenId}">Click to verify email</a>`,
+    html: emailHtml,
   };
 
   await sendEmail(verificationEmail);
 
   res.status(201).json({
-    user: { email: newUser.email, name: newUser.name },
+    message: "Verification letter was send to your email",
   });
 };
 
@@ -77,13 +85,14 @@ const login = async (req, res) => {
     user: {
       email: user.email,
       name: user.name,
+      avatar: user.avatarURL,
     },
   });
 };
 
 const getCurrent = async (req, res) => {
-  const { email, name } = req.user;
-  res.status(200).json({ email, name });
+  const { email, name, avatarURL } = req.user;
+  res.status(200).json({ email, name, avatar: avatarURL });
 };
 
 const logout = async (req, res) => {
@@ -94,7 +103,7 @@ const logout = async (req, res) => {
 };
 
 const updateUserSubscription = async (req, res) => {
-  const { _id, subscription } = req.user;
+  const { _id, subscription, email } = req.user;
 
   if (subscription) {
     HttpError(409, "You have already subscribed");
@@ -102,7 +111,18 @@ const updateUserSubscription = async (req, res) => {
 
   await User.findByIdAndUpdate(_id, { subscription: true }, { new: true });
 
-  // Відправляєм емейл
+  const emailHtml = createSubscriptionEmail({
+    BASE_URL,
+    email,
+  });
+
+  const subscriptionEmail = {
+    to: email,
+    subject: "So Yummy newsletter",
+    html: emailHtml,
+  };
+
+  await sendEmail(subscriptionEmail);
 
   res
     .status(200)
@@ -137,6 +157,11 @@ const verifyUser = async (req, res) => {
   });
 
   res.json({ message: "Verification successful" });
+};
+
+const unsubscribe = async (req, res) => {
+  const { email } = req.params;
+  const user = await User.findOne({ email });
 };
 
 const resendVerificationEmail = async (req, res) => {

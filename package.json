@@ -21,6 +21,7 @@
     "url": "https://github.com/SergSmilya/project-team_developer_007_node/issues"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.37.3",
     "cors": "2.8.5",
