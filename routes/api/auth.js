@@ -6,7 +6,6 @@ const { validateBody, validateToken, upload } = require("../../middlewares");
 
 const { schemas } = require("../../models/user");
 
-
 const router = express.Router();
 
 router.post(
@@ -32,5 +31,7 @@ router.post(
   validateBody(schemas.verifyEmailSchema, "missing required field email"),
   ctrl.resendVerificationEmail
 );
+
+router.get("/information", validateToken, ctrl.getInformation);
 
 module.exports = router;

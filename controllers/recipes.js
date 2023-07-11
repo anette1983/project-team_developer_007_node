@@ -3,7 +3,7 @@ const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
 
-const getCategories = async (req, res) => {};
+// const getCategories = async (req, res) => {};
 
 const getMainPageRecipes = async (req, res) => {
   const data = await Recipe.find(
@@ -38,7 +38,7 @@ const getRecipesByQuery = async (req, res) => {
 
 const getRecipesByTitle = async (req, res) => {
   const { query } = req.query;
-  console.log(req.params);
+  console.log(req.query);
 
   const data = await Recipe.find(
     {
@@ -77,9 +77,14 @@ const getRecipesByIngredient = async (req, res) => {
   res.json(data);
 };
 
-const getOwnrecipes = async (req, res) => {
-  const id = req.user.id;
-  const data = Recipe.find({ owner: id });
+const getOwnRecipes = async (req, res) => {
+  const id = req.user._id;
+  const data = await Recipe.find({ owner: id }, [
+    "title",
+    "category",
+    "preview",
+  ]);
+  console.log(data);
   res.json(data);
 };
 
@@ -91,8 +96,8 @@ const addRecipe = async (req, res) => {
 };
 
 const deleteRecipe = async (req, res) => {
-  const id = req.body;
-  const result = await Recipe.deleteOne({ _id: id });
+  const { recipeId } = req.params;
+  const result = await Recipe.deleteOne({ _id: recipeId });
   if (result.deletedCount === 0) {
     throw HttpError(404, "Not found");
   }
@@ -100,7 +105,8 @@ const deleteRecipe = async (req, res) => {
 };
 
 const getFavorite = async (req, res) => {
-  const { id } = req.query;
+  const id = req.user._id;
+
   const data = await Recipe.find(
     {
       usersWhoLiked: {
@@ -136,7 +142,7 @@ const addToFavorite = async (req, res) => {
 const removeFromFavorite = async (req, res) => {
   const id = req.user._id;
   const idToString = req.user._id.toString();
-  const { recipeId } = req.body;
+  const { recipeId } = req.params;
   const recipe = await Recipe.findById(recipeId);
   const isRecipeLiked = await recipe.usersWhoLiked
     .map((obj) => obj.userId.toString())
@@ -193,7 +199,7 @@ const addToShoppingList = async (req, res) => {
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
-  const { ingredientId } = req.body;
+  const { ingredientId } = req.params;
   // const shoppingList = await User.find(id, "shoppingList");
 
   const data = await User.findByIdAndUpdate(
@@ -208,12 +214,12 @@ const removeFromShoppingList = async (req, res) => {
 };
 
 module.exports = {
-  getCategories: ctrlWrapper(getCategories),
+  // getCategories: ctrlWrapper(getCategories),
   getMainPageRecipes: ctrlWrapper(getMainPageRecipes),
   getRecipesByQuery: ctrlWrapper(getRecipesByQuery),
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
-  getOwnrecipes: ctrlWrapper(getOwnrecipes),
+  getOwnRecipes: ctrlWrapper(getOwnRecipes),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipe: ctrlWrapper(deleteRecipe),
   getFavorite: ctrlWrapper(getFavorite),
