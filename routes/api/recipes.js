@@ -19,17 +19,17 @@ router.get("/ingredients", validateToken, ctrl.getRecipesByIngredient);
 
 router.get("/ingredients/list", validateToken, getIngredientsList);
 
-router.get("/own-recipes", validateToken, ctrl.getOwnrecipes);
+router.get("/own-recipes", validateToken, ctrl.getOwnRecipes);
 
 router.post("/own-recipes", validateToken, ctrl.addRecipe);
 
-router.delete("/own-recipes", validateToken, ctrl.deleteRecipe);
+router.delete("/own-recipes/:recipeId", validateToken, ctrl.deleteRecipe);
 
 router.get("/favorite", validateToken, ctrl.getFavorite);
 
 router.post("/favorite", validateToken, ctrl.addToFavorite);
 
-router.delete("/favorite", validateToken, ctrl.removeFromFavorite);
+router.delete("/favorite/:recipeId", validateToken, ctrl.removeFromFavorite);
 
 router.get("/popular-recipe", validateToken, ctrl.getPopular);
 

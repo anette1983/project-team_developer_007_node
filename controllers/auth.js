@@ -15,6 +15,7 @@ const {
   createVerificationEmail,
   createSubscriptionEmail,
 } = require("../helpers");
+const { Recipe } = require("../models/recipe");
 
 const { SECRET, BASE_URL } = process.env;
 
@@ -130,6 +131,7 @@ const updateUserSubscription = async (req, res) => {
     .json({ message: "You successfully subscribed to newsletter" });
 };
 
+
 const upadateUserInfo = async (req, res) => {
   const id = req.user._id;
   let fieldToUpdate = {}
@@ -154,8 +156,8 @@ const upadateUserInfo = async (req, res) => {
   await User.findOneAndUpdate(id, fieldToUpdate)
   const updateUserObj = await User.findById(id)
   res.status(200).json({ name: updateUserObj.name, avatarURL: updateUserObj.avatarURL });
-  
 }
+
 const verifyUser = async (req, res) => {
   const { verificationToken } = req.params;
 
@@ -204,6 +206,43 @@ const resendVerificationEmail = async (req, res) => {
   });
 };
 
+const getInformation = async (req, res) => {
+  const user = req.user;
+
+  const ownRecipes = await Recipe.find({ owner: user._id }, [
+    "title",
+    "category",
+    "preview",
+  ]);
+
+  const favoriteRecipes = await Recipe.find(
+    {
+      usersWhoLiked: {
+        $elemMatch: { userId: user._id },
+      },
+    },
+    ["title", "description", "preview", "time"]
+  );
+
+  const ownRecipesCount = ownRecipes.length;
+  const favoriteRecipesCount = favoriteRecipes.length;
+  const timeFromRegistration = Date.now() - Date.parse(user.createdAt);
+  const daysCount = Math.round(timeFromRegistration / 86400000);
+
+  const newUser = {
+    name: user.name,
+    email: user.email,
+    avatarURL: user.avatarURL,
+    verify: true,
+    subscription: false,
+    shoppingList: [],
+    ownRecipesCount,
+    favoriteRecipesCount,
+    daysCount,
+  };
+  res.json(newUser);
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
@@ -213,4 +252,5 @@ module.exports = {
   upadateUserInfo: ctrlWrapper(upadateUserInfo),
   verifyUser: ctrlWrapper(verifyUser),
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
+  getInformation: ctrlWrapper(getInformation),
 };
