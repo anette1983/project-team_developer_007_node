@@ -19,7 +19,7 @@ router.get("/ingredients", validateToken, ctrl.getRecipesByIngredient);
 
 router.get("/ingredients/list", validateToken, getIngredientsList);
 
-router.get("/own-recipes", validateToken, ctrl.getOwnrecipes);
+router.get("/own-recipes", validateToken, ctrl.getOwnRecipes);
 
 router.post("/own-recipes", validateToken, ctrl.addRecipe);
 

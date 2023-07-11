@@ -6,7 +6,6 @@ const { validateBody, validateToken, upload } = require("../../middlewares");
 
 const { schemas } = require("../../models/user");
 
-
 const router = express.Router();
 
 router.post(
@@ -23,9 +22,19 @@ router.post("/logout", validateToken, ctrl.logout);
 
 router.patch("/subscribe", validateToken, ctrl.updateUserSubscription);
 
-router.patch("/avatars",validateToken, upload.single("avatar"), ctrl.updateAvatar);
+router.patch(
+  "/avatars",
+  validateToken,
+  upload.single("avatar"),
+  ctrl.updateAvatar
+);
 
-router.patch("/userinfoupd", validateToken,upload.single("avatar"), ctrl.upadateUserInfo);
+router.patch(
+  "/userinfoupd",
+  validateToken,
+  upload.single("avatar"),
+  ctrl.upadateUserInfo
+);
 
 router.get("/verify/:verificationToken", ctrl.verifyUser);
 
@@ -34,5 +43,7 @@ router.post(
   validateBody(schemas.verifyEmailSchema, "missing required field email"),
   ctrl.resendVerificationEmail
 );
+
+router.get("/information", validateToken, ctrl.getInformation);
 
 module.exports = router;

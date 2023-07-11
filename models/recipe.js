@@ -31,7 +31,7 @@ const recipeSchema = new Schema(
     },
     area: {
       type: String,
-      required: [true, "Set area of recipe"],
+      // required: [true, "Set area of recipe"],
     },
     instructions: {
       type: String,
@@ -51,11 +51,11 @@ const recipeSchema = new Schema(
     },
     youtube: {
       type: String,
-      required: [true, "Set youtube link for recipe"],
+      // required: [true, "Set youtube link for recipe"],
     },
     preview: {
       type: String,
-      required: [true, "Set preview link for recipe"],
+      // required: [true, "Set preview link for recipe"],
     },
     tags: [String],
     ingredients: {
@@ -73,7 +73,7 @@ const recipeSchema = new Schema(
       ],
       required: [true, "Set ingredients for recipe"],
     },
-    usersWhoLiked: { type: Array },
+    usersWhoLiked: { type: Array, required: true, default: [] },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",

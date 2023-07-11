@@ -2,9 +2,8 @@ const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
-const { default: mongoose } = require("mongoose");
 
-const getCategories = async (req, res) => {};
+// const getCategories = async (req, res) => {};
 
 const getMainPageRecipes = async (req, res) => {
   const data = await Recipe.find(
@@ -78,9 +77,14 @@ const getRecipesByIngredient = async (req, res) => {
   res.json(data);
 };
 
-const getOwnrecipes = async (req, res) => {
-  const id = req.user.id;
-  const data = Recipe.find({ owner: id });
+const getOwnRecipes = async (req, res) => {
+  const id = req.user._id;
+  const data = await Recipe.find({ owner: id }, [
+    "title",
+    "category",
+    "preview",
+  ]);
+  console.log(data);
   res.json(data);
 };
 
@@ -102,11 +106,11 @@ const deleteRecipe = async (req, res) => {
 
 const getFavorite = async (req, res) => {
   const id = req.user._id;
-  const ObjectId = mongoose.Types.ObjectId;
+
   const data = await Recipe.find(
     {
       usersWhoLiked: {
-        $elemMatch: { userId: ObjectId(id) },
+        $elemMatch: { userId: id },
       },
     },
     ["title", "description", "preview", "time"]
@@ -195,7 +199,7 @@ const addToShoppingList = async (req, res) => {
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
-  const { ingredientId } = req.body;
+  const { ingredientId } = req.params;
   // const shoppingList = await User.find(id, "shoppingList");
 
   const data = await User.findByIdAndUpdate(
@@ -210,12 +214,12 @@ const removeFromShoppingList = async (req, res) => {
 };
 
 module.exports = {
-  getCategories: ctrlWrapper(getCategories),
+  // getCategories: ctrlWrapper(getCategories),
   getMainPageRecipes: ctrlWrapper(getMainPageRecipes),
   getRecipesByQuery: ctrlWrapper(getRecipesByQuery),
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
-  getOwnrecipes: ctrlWrapper(getOwnrecipes),
+  getOwnRecipes: ctrlWrapper(getOwnRecipes),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipe: ctrlWrapper(deleteRecipe),
   getFavorite: ctrlWrapper(getFavorite),
