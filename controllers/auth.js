@@ -130,34 +130,9 @@ const updateUserSubscription = async (req, res) => {
     .json({ message: "You successfully subscribed to newsletter" });
 };
 
-const updateAvatar = async (req, res) => {
-  const { _id } = req.user;
-  const uploadRes = await cloudinary.uploader.upload(
-    req.file.path,
-    { upload_preset: "avatars", use_filename: true, public_id: `${_id}` },
-    function (error, result) {
-      if (error) {
-        return res.status(500).json({
-          message: error,
-        });
-      }
-      return result;
-    }
-  );
-
-  fs.rm(req.file.path, { force: true }, () => {});
-
-  const avatarURL = uploadRes.url;
-  await User.findByIdAndUpdate(_id, { avatarURL });
-
-  res.json({ avatarURL });
-};
-
-
 const upadateUserInfo = async (req, res) => {
-  // console.log(req.user._id)
   const id = req.user._id;
-  
+  console.log(req.user)
   if (req.file) {
     const uploadRes = await cloudinary.uploader.upload(
       req.file.path,
@@ -178,10 +153,7 @@ const upadateUserInfo = async (req, res) => {
   if (req.body.name) {
     await User.findByIdAndUpdate(id, {name: req.body.name})
   }
-  if (req.body.email) {
-    await User.findByIdAndUpdate(id, {email: req.body.email})
-  }
-  res.status(200).json({message: `Updated`})
+  res.status(200).json({ message: `User information is updated` });
   
 }
 const verifyUser = async (req, res) => {
@@ -238,7 +210,6 @@ module.exports = {
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
   updateUserSubscription: ctrlWrapper(updateUserSubscription),
-  updateAvatar: ctrlWrapper(updateAvatar),
   upadateUserInfo: ctrlWrapper(upadateUserInfo),
   verifyUser: ctrlWrapper(verifyUser),
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),

@@ -23,8 +23,6 @@ router.post("/logout", validateToken, ctrl.logout);
 
 router.patch("/subscribe", validateToken, ctrl.updateUserSubscription);
 
-router.patch("/avatars",validateToken, upload.single("avatar"), ctrl.updateAvatar);
-
 router.patch("/userinfoupd", validateToken,upload.single("avatar"), ctrl.upadateUserInfo);
 
 router.get("/verify/:verificationToken", ctrl.verifyUser);
