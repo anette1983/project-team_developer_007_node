@@ -6,18 +6,20 @@ const { Ingredient } = require("../models/ingredient");
 // const getCategories = async (req, res) => {};
 
 const getMainPageRecipes = async (req, res) => {
-  const data = await Recipe.find(
-    {
-      $or: [
-        { category: "Seafood" },
-        { category: "Lamb" },
-        { category: "Chicken" },
-        { category: "Vegan" },
-      ],
-    },
-    ["category", "title", "_id"]
-  );
-  res.json(data);
+  const data = await Recipe.find({
+    $or: [
+      { category: "Seafood" },
+      { category: "Lamb" },
+      { category: "Chicken" },
+      { category: "Vegan" },
+    ],
+  });
+  const result = {};
+  data.map((recipe) => {
+    result[recipe.category] = [];
+    result[recipe.category].push(recipe);
+  });
+  res.json(result);
 };
 
 const getRecipesByQuery = async (req, res) => {
@@ -30,7 +32,7 @@ const getRecipesByQuery = async (req, res) => {
     const data = await Recipe.findById(id);
     return res.json(data);
   }
-  const data = await Recipe.find({ category }, ["preview", "title"], {
+  const data = await Recipe.find({ category }, [], {
     limit,
   });
   res.json(data);
@@ -40,15 +42,12 @@ const getRecipesByTitle = async (req, res) => {
   const { query } = req.query;
   console.log(req.query);
 
-  const data = await Recipe.find(
-    {
-      title: {
-        $regex: query,
-        $options: "i",
-      },
+  const data = await Recipe.find({
+    title: {
+      $regex: query,
+      $options: "i",
     },
-    ["preview", "title"]
-  );
+  });
   if (data.length === 0) {
     throw HttpError(404);
   }
@@ -63,27 +62,19 @@ const getRecipesByIngredient = async (req, res) => {
     { $project: { id: 0, name: 0, desc: 0, img: 0 } },
   ]);
   console.log(ingredients);
-  const data = await Recipe.find(
-    {
-      ingredients: {
-        $elemMatch: {
-          $or: ingredients,
-        },
+  const data = await Recipe.find({
+    ingredients: {
+      $elemMatch: {
+        $or: ingredients,
       },
     },
-
-    ["category", "title", "_id"]
-  );
+  });
   res.json(data);
 };
 
 const getOwnRecipes = async (req, res) => {
   const id = req.user._id;
-  const data = await Recipe.find({ owner: id }, [
-    "title",
-    "category",
-    "preview",
-  ]);
+  const data = await Recipe.find({ owner: id });
   console.log(data);
   res.json(data);
 };
@@ -107,14 +98,11 @@ const deleteRecipe = async (req, res) => {
 const getFavorite = async (req, res) => {
   const id = req.user._id;
 
-  const data = await Recipe.find(
-    {
-      usersWhoLiked: {
-        $elemMatch: { userId: id },
-      },
+  const data = await Recipe.find({
+    usersWhoLiked: {
+      $elemMatch: { userId: id },
     },
-    ["title", "description", "preview", "time"]
-  );
+  });
   if (data === []) {
     throw HttpError(404, "nothing found");
   }
