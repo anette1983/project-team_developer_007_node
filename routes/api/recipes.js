@@ -3,7 +3,8 @@ const express = require("express");
 const ctrl = require("../../controllers/recipes");
 const { getIngredientsList } = require("../../controllers/ingredients");
 const { getCategoriesList } = require("../../controllers/categories");
-const { validateToken } = require("../../middlewares");
+const { recipeSchemas } = require("../../models/recipe");
+const { validateToken, validateBody } = require("../../middlewares");
 
 const router = express.Router();
 
@@ -27,7 +28,12 @@ router.delete("/own-recipes/:recipeId", validateToken, ctrl.deleteRecipe);
 
 router.get("/favorite", validateToken, ctrl.getFavorite);
 
-router.post("/favorite", validateToken, ctrl.addToFavorite);
+router.post(
+  "/favorite",
+  validateBody(recipeSchemas.addToFavoriteSchema),
+  validateToken,
+  ctrl.addToFavorite
+);
 
 router.delete("/favorite/:recipeId", validateToken, ctrl.removeFromFavorite);
 
@@ -35,7 +41,12 @@ router.get("/popular-recipe", validateToken, ctrl.getPopular);
 
 router.get("/shopping-list", validateToken, ctrl.getShoppingList);
 
-router.post("/shopping-list", validateToken, ctrl.addToShoppingList);
+router.post(
+  "/shopping-list",
+  validateBody(recipeSchemas.addToShoppingListSchema),
+  validateToken,
+  ctrl.addToShoppingList
+);
 
 router.delete("/shopping-list", validateToken, ctrl.removeFromShoppingList);
 

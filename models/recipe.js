@@ -83,15 +83,48 @@ const recipeSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-const schema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().required(),
-  favorite: Joi.boolean(),
+const addToFavoriteSchema = Joi.object({ recipeId: Joi.string().required() });
+
+const addToShoppingListSchema = Joi.object({
+  ingredientId: Joi.string().required(),
+  measure: Joi.string().required(),
 });
+
+const addRecipeSchema = Joi.object({
+  title: Joi.string().required(),
+  category: Joi.string()
+    .valid(
+      "Seafood",
+      "Lamb",
+      "Side",
+      "Soup",
+      "Pasta",
+      "Beef",
+      "Miscellaneous",
+      "Dessert",
+      "Starter",
+      "Chicken",
+      "Pork",
+      "Goat",
+      "Breakfast",
+      "Vegan",
+      "Vegetarian"
+    )
+    .required(),
+  instructions: Joi.string().required(),
+  description: Joi.string().required,
+  time: Joi.string().required,
+  thumb: Joi.string().required,
+});
+
+const recipeSchemas = {
+  addToFavoriteSchema,
+  addToShoppingListSchema,
+  addRecipeSchema,
+};
 
 recipeSchema.post("save", handleMongooseError);
 
 const Recipe = model("recipe", recipeSchema);
 
-module.exports = { Recipe, schema };
+module.exports = { Recipe, recipeSchemas };
