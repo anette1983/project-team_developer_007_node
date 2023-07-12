@@ -75,7 +75,6 @@ const getRecipesByIngredient = async (req, res) => {
 const getOwnRecipes = async (req, res) => {
   const id = req.user._id;
   const data = await Recipe.find({ owner: id });
-  console.log(data);
   res.json(data);
 };
 
