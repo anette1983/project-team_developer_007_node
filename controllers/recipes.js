@@ -6,6 +6,7 @@ const { Ingredient } = require("../models/ingredient");
 // const getCategories = async (req, res) => {};
 
 const getMainPageRecipes = async (req, res) => {
+  const result = {};
   const data = await Recipe.find({
     $or: [
       { category: "Seafood" },
@@ -14,67 +15,89 @@ const getMainPageRecipes = async (req, res) => {
       { category: "Vegan" },
     ],
   });
-  const result = {};
-  data.map((recipe) => {
-    result[recipe.category] = [];
+  data.forEach((recipe) => {
+    if (!result[recipe.category]) {
+      result[recipe.category] = [];
+    }
+    if (result[recipe.category].length === 4) {
+      return;
+    }
     result[recipe.category].push(recipe);
   });
+
   res.json(result);
 };
 
 const getRecipesByQuery = async (req, res) => {
+  const { page = 1, limit = 8 } = req.params;
+  const skip = (page - 1) * limit;
   const { category, id } = req.query;
   if (category && id) {
     throw HttpError(400);
   }
-  const limit = 8;
   if (!category) {
     const data = await Recipe.findById(id);
     return res.json(data);
   }
   const data = await Recipe.find({ category }, [], {
+    skip,
     limit,
   });
   res.json(data);
 };
 
 const getRecipesByTitle = async (req, res) => {
-  const { query } = req.query;
-  console.log(req.query);
-
-  const data = await Recipe.find({
-    title: {
-      $regex: query,
-      $options: "i",
+  const { page = 1, limit = 8, query } = req.query;
+  const skip = (page - 1) * limit;
+  console.log(req.params);
+  const data = await Recipe.find(
+    {
+      title: {
+        $regex: query,
+        $options: "i",
+      },
     },
-  });
+    [],
+    { skip, limit }
+  );
   if (data.length === 0) {
-    throw HttpError(404);
+    throw HttpError(404, "no recipes found");
   }
   res.json(data);
 };
 
 const getRecipesByIngredient = async (req, res) => {
-  const { query } = req.query;
+  const { page = 1, limit = 8, query } = req.query;
+  const skip = (page - 1) * limit;
+
   console.log(query);
   const ingredients = await Ingredient.aggregate([
     { $match: { name: { $regex: query, $options: "i" } } },
     { $project: { id: 0, name: 0, desc: 0, img: 0 } },
   ]);
+  if (ingredients.length === 0) {
+    throw HttpError(404, "no recipes found");
+  }
   console.log(ingredients);
-  const data = await Recipe.find({
-    ingredients: {
-      $elemMatch: {
-        $or: ingredients,
+  const data = await Recipe.find(
+    {
+      ingredients: {
+        $elemMatch: {
+          $or: ingredients,
+        },
       },
     },
-  });
+    [],
+    { skip, limit }
+  );
   res.json(data);
 };
 
 const getOwnRecipes = async (req, res) => {
+  const { page = 1, limit = 4 } = req.query;
+  const skip = (page - 1) * limit;
   const id = req.user._id;
-  const data = await Recipe.find({ owner: id });
+  const data = await Recipe.find({ owner: id }, [], { skip, limit });
   res.json(data);
 };
 
@@ -95,13 +118,19 @@ const deleteRecipe = async (req, res) => {
 };
 
 const getFavorite = async (req, res) => {
+  const { page = 1, limit = 4 } = req.query;
+  const skip = (page - 1) * limit;
   const id = req.user._id;
 
-  const data = await Recipe.find({
-    usersWhoLiked: {
-      $elemMatch: { userId: id },
+  const data = await Recipe.find(
+    {
+      usersWhoLiked: {
+        $elemMatch: { userId: id },
+      },
     },
-  });
+    [],
+    { skip, limit }
+  );
   if (data === []) {
     throw HttpError(404, "nothing found");
   }
@@ -145,6 +174,8 @@ const removeFromFavorite = async (req, res) => {
 };
 
 const getPopular = async (req, res) => {
+  const { page = 1, limit = 4 } = req.query;
+  const skip = (page - 1) * limit;
   const data = await Recipe.aggregate([
     {
       $set: {
@@ -158,6 +189,8 @@ const getPopular = async (req, res) => {
         totalAdded: -1,
       },
     },
+    { $skip: Number(skip) },
+    { $limit: Number(limit) },
     { $project: { totalAdded: 1, title: 1, preview: 1 } },
   ]);
 
@@ -165,8 +198,10 @@ const getPopular = async (req, res) => {
 };
 
 const getShoppingList = async (req, res) => {
+  const { page = 1, limit = 8 } = req.query;
+  const skip = (page - 1) * limit;
   const id = req.user._id;
-  const data = await User.findById(id, "shoppingList");
+  const data = await User.findById(id, "shoppingList", { skip, limit });
   res.json(data);
 };
 const addToShoppingList = async (req, res) => {
