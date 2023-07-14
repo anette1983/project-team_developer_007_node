@@ -29,9 +29,8 @@ const getMainPageRecipes = async (req, res) => {
 };
 
 const getRecipesByQuery = async (req, res) => {
-  const { page = 1, limit = 8 } = req.params;
+  const { page = 1, limit = 8, category, id } = req.query;
   const skip = (page - 1) * limit;
-  const { category, id } = req.query;
   if (category && id) {
     throw HttpError(400);
   }
@@ -201,7 +200,10 @@ const getShoppingList = async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
   const skip = (page - 1) * limit;
   const id = req.user._id;
-  const data = await User.findById(id, "shoppingList", { skip, limit });
+  const data = await User.findById(id, ["shoppingList", "-_id"], {
+    skip,
+    limit,
+  });
   res.json(data);
 };
 const addToShoppingList = async (req, res) => {

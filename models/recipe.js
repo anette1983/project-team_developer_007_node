@@ -43,7 +43,7 @@ const recipeSchema = new Schema(
     },
     thumb: {
       type: String,
-      required: [true, "Set thumb link for recipe"],
+      // required: [true, "Set thumb link for recipe"],
     },
     time: {
       type: String,
