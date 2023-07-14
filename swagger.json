@@ -52,7 +52,7 @@
         },
         "responses": {
           "201": {
-            "description": "Successful operation",
+            "description": "User's added",
             "content": {
               "application/json": {
                 "schema": {
@@ -63,11 +63,30 @@
           },
           "400": {
             "description": "Bad request (invalid request body)",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidBody"
+                }
+              }
+            }
           },
           "409": {
             "description": "Email already in use",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Email already in use",
+                      "example": "Email already in use"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -99,9 +118,32 @@
               }
             }
           },
-          "401": {
+          "400": {
             "description": "Bad request (invalid request body)",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email or password is wrong/Email not verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Email or password is wrong/Email not verified",
+                      "example": "Email or password is wrong/Email not verified"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -116,7 +158,6 @@
           }
         ],
         "parameters": [],
-        "requestBody": {},
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -129,8 +170,14 @@
             }
           },
           "401": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "NonAuthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NonAuthorized"
+                }
+              }
+            }
           }
         }
       }
@@ -147,20 +194,162 @@
         "parameters": [],
         "responses": {
           "204": {
-            "description": "Successful operation",
-            "content": {}
-          },
-          "400": {
-            "description": "No token provided",
-            "content": {}
+            "description": "Successful operation"
           },
           "401": {
             "description": "Unauthorized (invalid access token)",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NonAuthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify/{verificationToken}": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Verify token",
+        "parameters": [
+          {
+            "name": "verificationToken",
+            "in": "path",
+            "description": "token (needed for all requests)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification successful"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Invalid user / Invalid session",
-            "content": {}
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserNotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Resend email verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User's email",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification email sent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)/Verification has already been passed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserNotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/information": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Information User",
+        "parameters": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "NonAuthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NonAuthorized"
+                }
+              }
+            }
           }
         }
       }
@@ -201,15 +390,25 @@
       "RegistrationResponse": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "format": "email"
+          "userData": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "id": {
+                "type": "string",
+                "description": "User's id",
+                "example": "64aa7af20583ec1247f1a088"
+              }
+            }
           },
-          "id": {
+          "message": {
             "type": "string",
-            "description": "User's id",
-            "example": "64aa7af20583ec1247f1a088"
+            "description": "Verification letter",
+            "example": "Verification letter was send to your email"
           }
         }
       },
@@ -238,7 +437,7 @@
             "description": "token (needed for all requests)",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXA"
           },
-          "userData": {
+          "user": {
             "type": "object",
             "properties": {
               "email": {
@@ -260,6 +459,35 @@
           }
         }
       },
+      "InvalidBody": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Invalid request body",
+            "example": "missing required ... field"
+          }
+        }
+      },
+      "NonAuthorized": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Invalid token",
+            "example": "Not authorized"
+          }
+        }
+      },
+      "UserNotFound": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "User not found"
+          }
+        }
+      },
       "CurrentResponse": {
         "type": "object",
         "properties": {
@@ -277,6 +505,61 @@
             "type": "string",
             "description": "User's avatar",
             "example": "www.gravatar.com/avatar/7798eeee8a523306f0172f6776b6fa94"
+          }
+        }
+      },
+      "InfoUser": {
+        "type": "object",
+        "properties": {
+          "newUser": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "Test"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "avatar": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "www.gravatar.com/avatar/7798eeee8a523306f0172f6776b6fa94"
+              },
+              "verify": {
+                "type": "boolean",
+                "description": "Verify user",
+                "example": true
+              },
+              "subscription": {
+                "type": "boolean",
+                "description": "Subscription user",
+                "example": false
+              },
+              "shoppingList": {
+                "type": "array",
+                "description": "ShoppingList user",
+                "example": []
+              },
+              "ownRecipesCount": {
+                "type": "integer",
+                "description": "OwnRecipesCount user",
+                "example": 0
+              },
+              "favoriteRecipesCount": {
+                "type": "integer",
+                "description": "FavoriteRecipesCount user",
+                "example": 0
+              },
+              "daysCount": {
+                "type": "integer",
+                "description": "FavoriteRecipesCount user",
+                "example": 0
+              }
+            }
           }
         }
       }

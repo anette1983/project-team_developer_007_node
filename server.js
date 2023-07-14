@@ -3,6 +3,8 @@ const app = require("./app");
 
 require("dotenv").config();
 
+mongoose.set("strictQuery", false);
+
 const { DB_HOST } = process.env;
 
 mongoose
