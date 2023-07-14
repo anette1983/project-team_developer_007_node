@@ -55,6 +55,11 @@ const register = async (req, res) => {
   await sendEmail(verificationEmail);
 
   res.status(201).json({
+    userData: {
+      message: "User created",
+      email,
+      id: newUser._id,
+    },
     message: "Verification letter was send to your email",
   });
 };
@@ -131,10 +136,9 @@ const updateUserSubscription = async (req, res) => {
     .json({ message: "You successfully subscribed to newsletter" });
 };
 
-
 const upadateUserInfo = async (req, res) => {
   const id = req.user._id;
-  let fieldToUpdate = {}
+  let fieldToUpdate = {};
   if (req.file) {
     await cloudinary.uploader.upload(
       req.file.path,
@@ -146,17 +150,19 @@ const upadateUserInfo = async (req, res) => {
           });
         }
         fs.rm(req.file.path, { force: true }, () => {});
-        fieldToUpdate = {...fieldToUpdate, avatarURL: result.url}
+        fieldToUpdate = { ...fieldToUpdate, avatarURL: result.url };
       }
     );
   }
   if (req.body.name) {
-    fieldToUpdate = {...fieldToUpdate, name: req.body.name}
+    fieldToUpdate = { ...fieldToUpdate, name: req.body.name };
   }
-  await User.findOneAndUpdate(id, fieldToUpdate)
-  const updateUserObj = await User.findById(id)
-  res.status(200).json({ name: updateUserObj.name, avatarURL: updateUserObj.avatarURL });
-}
+  await User.findOneAndUpdate(id, fieldToUpdate);
+  const updateUserObj = await User.findById(id);
+  res
+    .status(200)
+    .json({ name: updateUserObj.name, avatarURL: updateUserObj.avatarURL });
+};
 
 const verifyUser = async (req, res) => {
   const { verificationToken } = req.params;
