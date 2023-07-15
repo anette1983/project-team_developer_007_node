@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { nanoid } = require("nanoid");
-// const path = require("path");
+const path = require("path");
 const fs = require("fs");
 
 const cloudinary = require("../utils/cloudinary");
@@ -178,7 +178,7 @@ const verifyUser = async (req, res) => {
     verificationToken: null,
   });
 
-  res.json({ message: "Verification successful" });
+  res.sendFile(path.join(__dirname, "../", "/verificationSuccess.html"));
 };
 
 const unsubscribe = async (req, res) => {
