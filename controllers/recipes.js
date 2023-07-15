@@ -3,16 +3,14 @@ const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
 
-// const getCategories = async (req, res) => {};
-
 const getMainPageRecipes = async (req, res) => {
   const result = {};
   const data = await Recipe.find({
     $or: [
-      { category: "Seafood" },
-      { category: "Lamb" },
+      { category: "Breakfast" },
+      { category: "Miscellaneous" },
       { category: "Chicken" },
-      { category: "Vegan" },
+      { category: "Desserts" },
     ],
   });
   data.forEach((recipe) => {
@@ -68,8 +66,6 @@ const getRecipesByTitle = async (req, res) => {
 const getRecipesByIngredient = async (req, res) => {
   const { page = 1, limit = 8, query } = req.query;
   const skip = (page - 1) * limit;
-
-  console.log(query);
   const ingredients = await Ingredient.aggregate([
     { $match: { name: { $regex: query, $options: "i" } } },
     { $project: { id: 0, name: 0, desc: 0, img: 0 } },
@@ -77,7 +73,6 @@ const getRecipesByIngredient = async (req, res) => {
   if (ingredients.length === 0) {
     throw HttpError(404, "no recipes found");
   }
-  console.log(ingredients);
   const data = await Recipe.find(
     {
       ingredients: {
