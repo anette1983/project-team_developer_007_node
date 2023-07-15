@@ -61,7 +61,7 @@ const recipeSchema = new Schema(
     ingredients: {
       type: [
         {
-          id: {
+          _id: {
             type: Schema.Types.ObjectId,
             ref: "ingredient",
           },
@@ -112,9 +112,10 @@ const addRecipeSchema = Joi.object({
     )
     .required(),
   instructions: Joi.string().required(),
-  description: Joi.string().required,
-  time: Joi.string().required,
-  thumb: Joi.string().required,
+  description: Joi.string().required(),
+  time: Joi.string().required(),
+  thumb: Joi.string().required(),
+  ingredients: Joi.string().required(),
 });
 
 const recipeSchemas = {
