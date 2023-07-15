@@ -114,7 +114,7 @@ const addRecipeSchema = Joi.object({
   instructions: Joi.string().required(),
   description: Joi.string().required(),
   time: Joi.string().required(),
-  thumb: Joi.string().required(),
+  preview: Joi.string().required(),
   ingredients: Joi.string().required(),
 });
 
