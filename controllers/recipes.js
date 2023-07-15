@@ -98,7 +98,12 @@ const getOwnRecipes = async (req, res) => {
 const addRecipe = async (req, res) => {
   const id = req.user._id;
   const body = req.body;
-  const data = await Recipe.create({ ...body, owner: id });
+  console.log(body)
+  const data = await Recipe.create({
+    ...body,
+    owner: id,
+    ingredients: JSON.parse(req.body.ingredients),
+  });
   res.status(201).json(data);
 };
 
