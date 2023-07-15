@@ -4,7 +4,12 @@ const ctrl = require("../../controllers/recipes");
 const { getIngredientsList } = require("../../controllers/ingredients");
 const { getCategoriesList } = require("../../controllers/categories");
 const { recipeSchemas } = require("../../models/recipe");
-const { validateToken, validateBody, upload, cloudinaryUpload } = require("../../middlewares");
+const {
+  validateToken,
+  validateBody,
+  upload,
+  cloudinaryUpload,
+} = require("../../middlewares");
 // const { schemas } = require("../../models/user");
 
 const router = express.Router();
@@ -26,7 +31,7 @@ router.get("/own-recipes", validateToken, ctrl.getOwnRecipes);
 router.post(
   "/own-recipes",
   validateToken,
-  upload.single("img"),
+  upload.single("preview"),
   cloudinaryUpload,
   validateBody(recipeSchemas.addRecipeSchema),
   ctrl.addRecipe
