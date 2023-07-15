@@ -4,15 +4,16 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
 
 const getMainPageRecipes = async (req, res) => {
-  const result = {};
+  const result = [];
   const data = await Recipe.find({
     $or: [
       { category: "Breakfast" },
       { category: "Miscellaneous" },
       { category: "Chicken" },
-      { category: "Desserts" },
+      { category: "Dessert" },
     ],
   });
+
   data.forEach((recipe) => {
     if (!result[recipe.category]) {
       result[recipe.category] = [];
@@ -23,7 +24,7 @@ const getMainPageRecipes = async (req, res) => {
     result[recipe.category].push(recipe);
   });
 
-  res.json(result);
+  res.json(Object.values(result));
 };
 
 const getRecipesByQuery = async (req, res) => {
@@ -98,7 +99,7 @@ const getOwnRecipes = async (req, res) => {
 const addRecipe = async (req, res) => {
   const id = req.user._id;
   const body = req.body;
-  console.log(body)
+  console.log(body);
   const data = await Recipe.create({
     ...body,
     owner: id,
