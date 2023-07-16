@@ -159,7 +159,6 @@ const getOwnRecipes = async (req, res) => {
   const skip = (page - 1) * limit;
   const id = req.user._id;
 
-
   const [{ data, total }] = await Recipe.aggregate([
     {
       $facet: {
@@ -180,7 +179,6 @@ const getOwnRecipes = async (req, res) => {
   const totalCount = Object.values(total[0]);
 
   res.json({ total: totalCount[0], recipes: [...data] });
-
 };
 
 const addRecipe = async (req, res) => {
@@ -241,11 +239,9 @@ const getFavorite = async (req, res) => {
     throw HttpError(404, "no recipes found");
   }
 
-
   const totalCount = Object.values(total[0]);
 
   res.json({ total: totalCount[0], recipes: [...data] });
-
 };
 
 const addToFavorite = async (req, res) => {
@@ -318,14 +314,12 @@ const getPopular = async (req, res) => {
     },
   ]);
 
-
   if (data.length === 0) {
     throw HttpError(404, "no recipes found");
   }
   const totalCount = Object.values(total[0]);
 
   res.json({ total: totalCount[0], recipes: [...data] });
-
 };
 
 const getShoppingList = async (req, res) => {
@@ -369,25 +363,7 @@ const getShoppingList = async (req, res) => {
     throw HttpError(404, "no ingredients found");
   }
   const totalCount = Object.values(total[0]);
-
   const shoppingList = data[0].shoppingList;
-
-
-  const data = await User.aggregate([
-    { $match: { _id: id } },
-    {
-      $lookup: {
-        from: "ingredients",
-        localField: "shoppingList.ingredientId",
-        foreignField: "_id",
-        as: "shoppingList",
-      },
-    },
-    { $skip: Number(skip) },
-    { $limit: Number(limit) },
-    { $project: { shoppingList: 1, _id: 0 } },
-  ]);
-
 
   res.json({ total: totalCount[0], list: [...shoppingList] });
 };
