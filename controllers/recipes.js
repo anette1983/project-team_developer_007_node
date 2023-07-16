@@ -48,7 +48,10 @@ const getRecipesByCategory = async (req, res) => {
 const getRecipeById = async (req, res) => {
   const { id } = req.params;
 
-  const data = await Recipe.findById(id);
+  const data = await Recipe.findById(id).populate(
+    "ingredients._id",
+    "desc img name"
+  );
   return res.json(data);
 };
 
