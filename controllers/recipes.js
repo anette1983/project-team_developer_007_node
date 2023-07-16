@@ -390,7 +390,7 @@ const addToShoppingList = async (req, res) => {
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
-  const { ingredientId } = req.query;
+  const { ingredientId } = req.params;
 
   const aggregatedData = await User.aggregate([
     { $match: { _id: id } },

@@ -63,6 +63,10 @@ router.post(
   ctrl.addToShoppingList
 );
 
-router.delete("/shopping-list", validateToken, ctrl.removeFromShoppingList);
+router.delete(
+  "/shopping-list/:ingredientId",
+  validateToken,
+  ctrl.removeFromShoppingList
+);
 
 module.exports = router;
