@@ -61,7 +61,14 @@ const getRecipesByQuery = async (req, res) => {
 const getRecipesByTitle = async (req, res) => {
   const { page = 1, limit = 8, query } = req.query;
   const skip = (page - 1) * limit;
-  console.log(req.params);
+
+  const total = await Recipe.find({
+    title: {
+      $regex: query,
+      $options: "i",
+    },
+  }).countDocuments({});
+
   const data = await Recipe.find(
     {
       title: {
@@ -75,7 +82,7 @@ const getRecipesByTitle = async (req, res) => {
   if (data.length === 0) {
     throw HttpError(404, "no recipes found");
   }
-  res.json(data);
+  res.json({ total, recipes: [...data] });
 };
 
 const getRecipesByIngredient = async (req, res) => {
@@ -88,6 +95,15 @@ const getRecipesByIngredient = async (req, res) => {
   if (ingredients.length === 0) {
     throw HttpError(404, "no recipes found");
   }
+
+  const total = await Recipe.find({
+    ingredients: {
+      $elemMatch: {
+        $or: ingredients,
+      },
+    },
+  }).countDocuments({});
+
   const data = await Recipe.find(
     {
       ingredients: {
@@ -99,7 +115,7 @@ const getRecipesByIngredient = async (req, res) => {
     [],
     { skip, limit }
   );
-  res.json(data);
+  res.json({ total, recipes: [...data] });
 };
 
 const getOwnRecipes = async (req, res) => {
