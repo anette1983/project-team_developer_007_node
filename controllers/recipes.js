@@ -182,7 +182,6 @@ const addRecipe = async (req, res) => {
     owner: id,
     ingredients: JSON.parse(req.body.ingredients),
   });
-  console.log(data)
   res.status(201).json(data);
 };
 
