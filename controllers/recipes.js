@@ -48,17 +48,10 @@ const getRecipesByCategory = async (req, res) => {
 const getRecipeById = async (req, res) => {
   const { id } = req.params;
 
-  const data = await Recipe.aggregate([
-    { $match: { _id: ObjectId(id) } },
-    {
-      $lookup: {
-        from: "ingredients",
-        localField: "ingredients._id",
-        foreignField: "_id",
-        as: "ingredients",
-      },
-    },
-  ]);
+  const data = await Recipe.findById(id).populate(
+    "ingredients._id",
+    "desc img name"
+  );
   return res.json(data);
 };
 
@@ -400,7 +393,7 @@ const addToShoppingList = async (req, res) => {
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
-  const { ingredientId } = req.query;
+  const { ingredientId } = req.params;
 
   const aggregatedData = await User.aggregate([
     { $match: { _id: id } },
