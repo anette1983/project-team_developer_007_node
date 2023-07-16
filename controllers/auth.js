@@ -110,26 +110,31 @@ const logout = async (req, res) => {
 };
 
 const updateUserSubscription = async (req, res) => {
-  const { _id, subscription, email } = req.user;
+  const { _id, subscriptionEmail } = req.user;
+  const { email } = req.body;
 
-  if (subscription) {
-    HttpError(409, "You have already subscribed");
+  if (subscriptionEmail) {
+    throw HttpError(409, "You have already subscribed");
   }
 
-  await User.findByIdAndUpdate(_id, { subscription: true }, { new: true });
+  await User.findByIdAndUpdate(
+    _id,
+    { subscriptionEmail: email },
+    { new: true }
+  );
 
   const emailHtml = createSubscriptionEmail({
     BASE_URL,
     email,
   });
 
-  const subscriptionEmail = {
+  const subscriptionConfirmationEmail = {
     to: email,
     subject: "So Yummy newsletter",
     html: emailHtml,
   };
 
-  await sendEmail(subscriptionEmail);
+  await sendEmail(subscriptionConfirmationEmail);
 
   res
     .status(200)
@@ -163,8 +168,13 @@ const verifyUser = async (req, res) => {
 };
 
 const unsubscribe = async (req, res) => {
-  const { email } = req.params;
-  const user = await User.findOne({ email });
+  const { userEmail } = req.params;
+  const user = await User.findOne({ subscriptionEmail: userEmail });
+  if (!user) {
+    res.sendFile(path.join(__dirname, "../", "/unsubscribeError.html"));
+  }
+
+  res.sendFile(path.join(__dirname, "../", "/unsubscribe.html"));
 };
 
 const resendVerificationEmail = async (req, res) => {
@@ -235,6 +245,7 @@ module.exports = {
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  unsubscribe: ctrlWrapper(unsubscribe),
   updateUserSubscription: ctrlWrapper(updateUserSubscription),
   upadateUserInfo: ctrlWrapper(upadateUserInfo),
   verifyUser: ctrlWrapper(verifyUser),

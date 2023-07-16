@@ -18,7 +18,9 @@ router.get("/category-list", validateToken, getCategoriesList);
 
 router.get("/main-page", validateToken, ctrl.getMainPageRecipes);
 
-router.get("/", ctrl.getRecipesByQuery);
+router.get("/recipe/:id", ctrl.getRecipeById);
+
+router.get("/category/:name", ctrl.getRecipesByCategory);
 
 router.get("/search", validateToken, ctrl.getRecipesByTitle);
 
@@ -61,6 +63,10 @@ router.post(
   ctrl.addToShoppingList
 );
 
-router.delete("/shopping-list", validateToken, ctrl.removeFromShoppingList);
+router.delete(
+  "/shopping-list/:ingredientId",
+  validateToken,
+  ctrl.removeFromShoppingList
+);
 
 module.exports = router;

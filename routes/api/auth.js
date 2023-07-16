@@ -25,9 +25,20 @@ router.get("/current", validateToken, ctrl.getCurrent);
 
 router.post("/logout", validateToken, ctrl.logout);
 
-router.patch("/subscribe", validateToken, ctrl.updateUserSubscription);
+router.get("/unsubscribe/:userEmail", ctrl.unsubscribe);
+
 
 router.patch("/userinfoupd", validateToken,upload.single("avatar"),cloudinaryUpload, ctrl.upadateUserInfo);
+
+router.patch(
+  "/subscribe",
+  validateToken,
+  validateBody(schemas.subscribtionEmailSchema, "missing required field email"),
+  ctrl.updateUserSubscription
+);
+
+
+
 
 router.get("/verify/:verificationToken", ctrl.verifyUser);
 
