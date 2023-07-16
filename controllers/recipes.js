@@ -1,7 +1,10 @@
+/* eslint-disable array-callback-return */
 const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
+const { default: mongoose } = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 const getMainPageRecipes = async (req, res) => {
   const result = [];
@@ -34,13 +37,24 @@ const getRecipesByQuery = async (req, res) => {
     throw HttpError(400);
   }
   if (!category) {
-    const data = await Recipe.findById(id);
+    const data = await Recipe.aggregate([
+      { $match: { _id: ObjectId(id) } },
+      {
+        $lookup: {
+          from: "ingredients",
+          localField: "ingredients._id",
+          foreignField: "_id",
+          as: "ingredients",
+        },
+      },
+    ]);
     return res.json(data);
   }
   const data = await Recipe.find({ category }, [], {
     skip,
     limit,
   });
+
   res.json(data);
 };
 
@@ -92,8 +106,9 @@ const getOwnRecipes = async (req, res) => {
   const { page = 1, limit = 4 } = req.query;
   const skip = (page - 1) * limit;
   const id = req.user._id;
+  const total = await Recipe.find({ owner: id }).countDocuments({});
   const data = await Recipe.find({ owner: id }, [], { skip, limit });
-  res.json(data);
+  res.json({ total, recipes: { ...data } });
 };
 
 const addRecipe = async (req, res) => {
@@ -122,6 +137,12 @@ const getFavorite = async (req, res) => {
   const skip = (page - 1) * limit;
   const id = req.user._id;
 
+  const total = await Recipe.find({
+    usersWhoLiked: {
+      $elemMatch: { userId: id },
+    },
+  }).countDocuments({});
+
   const data = await Recipe.find(
     {
       usersWhoLiked: {
@@ -131,10 +152,11 @@ const getFavorite = async (req, res) => {
     [],
     { skip, limit }
   );
+
   if (data === []) {
     throw HttpError(404, "nothing found");
   }
-  res.json(data);
+  res.json({ total, recipes: { ...data } });
 };
 
 const addToFavorite = async (req, res) => {
@@ -165,7 +187,7 @@ const removeFromFavorite = async (req, res) => {
     .includes(idToString);
 
   if (!isRecipeLiked) {
-    throw HttpError(409, "can not remove from favorite");
+    throw HttpError(409, "recipe is not in your favorite list");
   }
   await Recipe.findByIdAndUpdate(recipeId, {
     $pull: { usersWhoLiked: { userId: id } },
@@ -176,6 +198,9 @@ const removeFromFavorite = async (req, res) => {
 const getPopular = async (req, res) => {
   const { page = 1, limit = 4 } = req.query;
   const skip = (page - 1) * limit;
+
+  const total = await Recipe.find().countDocuments({});
+
   const data = await Recipe.aggregate([
     {
       $set: {
@@ -194,40 +219,99 @@ const getPopular = async (req, res) => {
     { $project: { totalAdded: 1, title: 1, preview: 1 } },
   ]);
 
-  res.json(data);
+  res.json({ total, recipes: { ...data } });
 };
 
 const getShoppingList = async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
   const skip = (page - 1) * limit;
   const id = req.user._id;
-  const data = await User.findById(id, ["shoppingList", "-_id"], {
-    skip,
-    limit,
-  });
-  res.json(data);
+
+  const total = await User.aggregate([
+    { $match: { _id: id } },
+
+    {
+      $project: {
+        _id: 0,
+        total: {
+          $cond: {
+            if: { $isArray: "$shoppingList" },
+            then: { $size: "$shoppingList" },
+            else: "NA",
+          },
+        },
+      },
+    },
+  ]);
+  const totalCount = Object.values(total[0]);
+  const data = await User.aggregate([
+    { $match: { _id: id } },
+    {
+      $lookup: {
+        from: "ingredients",
+        localField: "shoppingList.ingredientId",
+        foreignField: "_id",
+        as: "shoppingList",
+      },
+    },
+    { $skip: Number(skip) },
+    { $limit: Number(limit) },
+    { $project: { shoppingList: 1, _id: 0 } },
+  ]);
+
+  res.status(200).json({ totalCount: totalCount[0], ...data });
 };
 const addToShoppingList = async (req, res) => {
   const id = req.user._id;
   const { ingredientId, measure } = req.body;
-  // const shoppingList = await User.find(id, "shoppingList");
 
-  const data = await User.findByIdAndUpdate(
-    id,
+  const aggregatedData = await User.aggregate([
+    { $match: { _id: id } },
+    { $project: { shoppingList: 1 } },
+  ]);
+  const shoppingList = aggregatedData[0].shoppingList;
+  const isAdded = [];
+  shoppingList.map((e) => {
+    if (e.ingredientId.toString() === ingredientId) {
+      isAdded.push(true);
+    }
+    isAdded.push(false);
+  });
+  if (isAdded.includes(true)) {
+    throw HttpError(409, "you already have this ingredient");
+  }
+  await User.findOneAndUpdate(
+    { _id: id },
     {
       $push: { shoppingList: { ingredientId, measure } },
     },
-
     { new: true }
   );
-  res.json(data.shoppingList);
+  const response = await Ingredient.findById({ _id: ingredientId });
+  res.json(response);
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
-  const { ingredientId } = req.params;
-  // const shoppingList = await User.find(id, "shoppingList");
+  const { ingredientId } = req.query;
 
-  const data = await User.findByIdAndUpdate(
+  const aggregatedData = await User.aggregate([
+    { $match: { _id: id } },
+    { $project: { shoppingList: 1 } },
+  ]);
+  const shoppingList = aggregatedData[0].shoppingList;
+  const isAdded = [];
+  shoppingList.map((e) => {
+    if (e.ingredientId.toString() === ingredientId) {
+      isAdded.push(true);
+    }
+    isAdded.push(false);
+  });
+
+  if (!isAdded.includes(true)) {
+    throw HttpError(409, "you don´t have this ingredient in shopping list");
+  }
+
+  await User.findByIdAndUpdate(
     id,
     {
       $pull: { shoppingList: { ingredientId } },
@@ -235,11 +319,10 @@ const removeFromShoppingList = async (req, res) => {
 
     { new: true }
   );
-  res.json(data.shoppingList);
+  res.status(200).json("Deleted");
 };
 
 module.exports = {
-  // getCategories: ctrlWrapper(getCategories),
   getMainPageRecipes: ctrlWrapper(getMainPageRecipes),
   getRecipesByQuery: ctrlWrapper(getRecipesByQuery),
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
