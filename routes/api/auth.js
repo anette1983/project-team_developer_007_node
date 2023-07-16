@@ -2,7 +2,12 @@ const express = require("express");
 
 const ctrl = require("../../controllers/auth");
 
-const { validateBody, validateToken, upload } = require("../../middlewares");
+const {
+  validateBody,
+  validateToken,
+  upload,
+  cloudinaryUpload,
+} = require("../../middlewares");
 
 const { schemas } = require("../../models/user");
 
@@ -22,7 +27,7 @@ router.post("/logout", validateToken, ctrl.logout);
 
 router.patch("/subscribe", validateToken, ctrl.updateUserSubscription);
 
-router.patch("/userinfoupd", validateToken,upload.single("avatar"), ctrl.upadateUserInfo);
+router.patch("/userinfoupd", validateToken,upload.single("avatar"),cloudinaryUpload, ctrl.upadateUserInfo);
 
 router.get("/verify/:verificationToken", ctrl.verifyUser);
 

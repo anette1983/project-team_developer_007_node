@@ -138,26 +138,7 @@ const updateUserSubscription = async (req, res) => {
 
 const upadateUserInfo = async (req, res) => {
   const id = req.user._id;
-  let fieldToUpdate = {};
-  if (req.file) {
-    await cloudinary.uploader.upload(
-      req.file.path,
-      { upload_preset: "avatars", use_filename: true, public_id: `${id}` },
-      function (error, result) {
-        if (error) {
-          return res.status(500).json({
-            message: error.message,
-          });
-        }
-        fs.rm(req.file.path, { force: true }, () => {});
-        fieldToUpdate = { ...fieldToUpdate, avatarURL: result.url };
-      }
-    );
-  }
-  if (req.body.name) {
-    fieldToUpdate = { ...fieldToUpdate, name: req.body.name };
-  }
-  await User.findOneAndUpdate(id, fieldToUpdate);
+  await User.findOneAndUpdate(id, req.body);
   const updateUserObj = await User.findById(id);
   res
     .status(200)
