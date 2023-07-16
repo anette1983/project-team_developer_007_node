@@ -33,7 +33,7 @@ router.get("/own-recipes", validateToken, ctrl.getOwnRecipes);
 router.post(
   "/own-recipes",
   validateToken,
-  upload.single("img"),
+  upload.single("preview"),
   cloudinaryUpload,
   validateBody(recipeSchemas.addRecipeSchema),
   ctrl.addRecipe
