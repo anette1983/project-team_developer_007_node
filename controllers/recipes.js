@@ -48,17 +48,7 @@ const getRecipesByCategory = async (req, res) => {
 const getRecipeById = async (req, res) => {
   const { id } = req.params;
 
-  const data = await Recipe.aggregate([
-    { $match: { _id: ObjectId(id) } },
-    {
-      $lookup: {
-        from: "ingredients",
-        localField: "ingredients._id",
-        foreignField: "_id",
-        as: "ingredients",
-      },
-    },
-  ]);
+  const data = await Recipe.findById(id);
   return res.json(data);
 };
 
