@@ -62,27 +62,41 @@ const getRecipesByTitle = async (req, res) => {
   const { page = 1, limit = 8, query } = req.query;
   const skip = (page - 1) * limit;
 
-  const total = await Recipe.find({
-    title: {
-      $regex: query,
-      $options: "i",
-    },
-  }).countDocuments({});
-
-  const data = await Recipe.find(
+  const [{ data, total }] = await Recipe.aggregate([
     {
-      title: {
-        $regex: query,
-        $options: "i",
+      $facet: {
+        data: [
+          {
+            $match: {
+              title: {
+                $regex: query,
+                $options: "i",
+              },
+            },
+          },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+        ],
+        total: [
+          {
+            $match: {
+              title: {
+                $regex: query,
+                $options: "i",
+              },
+            },
+          },
+          { $count: "total" },
+        ],
       },
     },
-    [],
-    { skip, limit }
-  );
+  ]);
   if (data.length === 0) {
     throw HttpError(404, "no recipes found");
   }
-  res.json({ total, recipes: [...data] });
+  const totalCount = Object.values(total[0]);
+
+  res.json({ total: totalCount[0], recipes: [...data] });
 };
 
 const getRecipesByIngredient = async (req, res) => {
@@ -96,35 +110,71 @@ const getRecipesByIngredient = async (req, res) => {
     throw HttpError(404, "no recipes found");
   }
 
-  const total = await Recipe.find({
-    ingredients: {
-      $elemMatch: {
-        $or: ingredients,
-      },
-    },
-  }).countDocuments({});
-
-  const data = await Recipe.find(
+  const [{ data, total }] = await Recipe.aggregate([
     {
-      ingredients: {
-        $elemMatch: {
-          $or: ingredients,
-        },
+      $facet: {
+        data: [
+          {
+            $match: {
+              ingredients: {
+                $elemMatch: {
+                  $or: ingredients,
+                },
+              },
+            },
+          },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+        ],
+        total: [
+          {
+            $match: {
+              ingredients: {
+                $elemMatch: {
+                  $or: ingredients,
+                },
+              },
+            },
+          },
+          { $count: "total" },
+        ],
       },
     },
-    [],
-    { skip, limit }
-  );
-  res.json({ total, recipes: [...data] });
+  ]);
+
+  if (data.length === 0) {
+    throw HttpError(404, "no recipes found");
+  }
+  const totalCount = Object.values(total[0]);
+
+  res.json({ total: totalCount[0], recipes: [...data] });
 };
 
 const getOwnRecipes = async (req, res) => {
   const { page = 1, limit = 4 } = req.query;
   const skip = (page - 1) * limit;
   const id = req.user._id;
-  const total = await Recipe.find({ owner: id }).countDocuments({});
-  const data = await Recipe.find({ owner: id }, [], { skip, limit });
-  res.json({ total, recipes: { ...data } });
+
+  const [{ data, total }] = await Recipe.aggregate([
+    {
+      $facet: {
+        data: [
+          { $match: { owner: id } },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+        ],
+        total: [{ $match: { owner: id } }, { $count: "total" }],
+      },
+    },
+  ]);
+
+  if (data.length === 0) {
+    throw HttpError(404, "no recipes found");
+  }
+
+  const totalCount = Object.values(total[0]);
+
+  res.json({ total: totalCount[0], recipes: [...data] });
 };
 
 const addRecipe = async (req, res) => {
@@ -153,26 +203,41 @@ const getFavorite = async (req, res) => {
   const skip = (page - 1) * limit;
   const id = req.user._id;
 
-  const total = await Recipe.find({
-    usersWhoLiked: {
-      $elemMatch: { userId: id },
-    },
-  }).countDocuments({});
-
-  const data = await Recipe.find(
+  const [{ data, total }] = await Recipe.aggregate([
     {
-      usersWhoLiked: {
-        $elemMatch: { userId: id },
+      $facet: {
+        data: [
+          {
+            $match: {
+              usersWhoLiked: {
+                $elemMatch: { userId: id },
+              },
+            },
+          },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+        ],
+        total: [
+          {
+            $match: {
+              usersWhoLiked: {
+                $elemMatch: { userId: id },
+              },
+            },
+          },
+          { $count: "total" },
+        ],
       },
     },
-    [],
-    { skip, limit }
-  );
+  ]);
 
-  if (data === []) {
-    throw HttpError(404, "nothing found");
+  if (data.length === 0) {
+    throw HttpError(404, "no recipes found");
   }
-  res.json({ total, recipes: { ...data } });
+
+  const totalCount = Object.values(total[0]);
+
+  res.json({ total: totalCount[0], recipes: [...data] });
 };
 
 const addToFavorite = async (req, res) => {
@@ -215,27 +280,41 @@ const getPopular = async (req, res) => {
   const { page = 1, limit = 4 } = req.query;
   const skip = (page - 1) * limit;
 
-  const total = await Recipe.find().countDocuments({});
-
-  const data = await Recipe.aggregate([
+  const [{ data, total }] = await Recipe.aggregate([
     {
-      $set: {
-        totalAdded: {
-          $size: "$usersWhoLiked",
-        },
+      $facet: {
+        data: [
+          {
+            $set: {
+              totalAdded: {
+                $size: "$usersWhoLiked",
+              },
+            },
+          },
+          {
+            $sort: {
+              totalAdded: -1,
+            },
+          },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+          { $project: { totalAdded: 1, title: 1, preview: 1 } },
+        ],
+        total: [
+          {
+            $count: "total",
+          },
+        ],
       },
     },
-    {
-      $sort: {
-        totalAdded: -1,
-      },
-    },
-    { $skip: Number(skip) },
-    { $limit: Number(limit) },
-    { $project: { totalAdded: 1, title: 1, preview: 1 } },
   ]);
 
-  res.json({ total, recipes: { ...data } });
+  if (data.length === 0) {
+    throw HttpError(404, "no recipes found");
+  }
+  const totalCount = Object.values(total[0]);
+
+  res.json({ total: totalCount[0], recipes: [...data] });
 };
 
 const getShoppingList = async (req, res) => {
@@ -243,39 +322,45 @@ const getShoppingList = async (req, res) => {
   const skip = (page - 1) * limit;
   const id = req.user._id;
 
-  const total = await User.aggregate([
-    { $match: { _id: id } },
-
+  const [{ data, total }] = await User.aggregate([
     {
-      $project: {
-        _id: 0,
-        total: {
-          $cond: {
-            if: { $isArray: "$shoppingList" },
-            then: { $size: "$shoppingList" },
-            else: "NA",
+      $facet: {
+        data: [
+          {
+            $match: { _id: id },
           },
-        },
+          {
+            $lookup: {
+              from: "ingredients",
+              localField: "shoppingList.ingredientId",
+              foreignField: "_id",
+              as: "shoppingList",
+            },
+          },
+          { $skip: Number(skip) },
+          { $limit: Number(limit) },
+          { $project: { shoppingList: 1, _id: 0 } },
+        ],
+        total: [
+          {
+            $match: { _id: id },
+          },
+          { $unwind: "$shoppingList" },
+          {
+            $count: "shoppingList",
+          },
+        ],
       },
     },
-  ]);
-  const totalCount = Object.values(total[0]);
-  const data = await User.aggregate([
-    { $match: { _id: id } },
-    {
-      $lookup: {
-        from: "ingredients",
-        localField: "shoppingList.ingredientId",
-        foreignField: "_id",
-        as: "shoppingList",
-      },
-    },
-    { $skip: Number(skip) },
-    { $limit: Number(limit) },
-    { $project: { shoppingList: 1, _id: 0 } },
   ]);
 
-  res.status(200).json({ totalCount: totalCount[0], ...data });
+  if (data[0].shoppingList.length === 0) {
+    throw HttpError(404, "no ingredients found");
+  }
+  const totalCount = Object.values(total[0]);
+  const shoppingList = data[0].shoppingList;
+
+  res.json({ total: totalCount[0], list: [...shoppingList] });
 };
 const addToShoppingList = async (req, res) => {
   const id = req.user._id;
