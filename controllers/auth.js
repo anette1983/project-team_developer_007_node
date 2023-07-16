@@ -114,7 +114,7 @@ const updateUserSubscription = async (req, res) => {
   const { email } = req.body;
 
   if (subscriptionEmail) {
-    HttpError(409, "You have already subscribed");
+    throw HttpError(409, "You have already subscribed");
   }
 
   await User.findByIdAndUpdate(
@@ -187,8 +187,13 @@ const verifyUser = async (req, res) => {
 };
 
 const unsubscribe = async (req, res) => {
-  const { email } = req.params;
-  const user = await User.findOne({ email });
+  const { userEmail } = req.params;
+  const user = await User.findOne({ subscriptionEmail: userEmail });
+  if (!user) {
+    res.sendFile(path.join(__dirname, "../", "/unsubscribeError.html"));
+  }
+
+  res.sendFile(path.join(__dirname, "../", "/unsubscribe.html"));
 };
 
 const resendVerificationEmail = async (req, res) => {
@@ -259,6 +264,7 @@ module.exports = {
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  unsubscribe: ctrlWrapper(unsubscribe),
   updateUserSubscription: ctrlWrapper(updateUserSubscription),
   upadateUserInfo: ctrlWrapper(upadateUserInfo),
   verifyUser: ctrlWrapper(verifyUser),

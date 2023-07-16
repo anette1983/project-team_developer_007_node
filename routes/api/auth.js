@@ -20,6 +20,8 @@ router.get("/current", validateToken, ctrl.getCurrent);
 
 router.post("/logout", validateToken, ctrl.logout);
 
+router.get("/unsubscribe/:userEmail", ctrl.unsubscribe);
+
 router.patch(
   "/subscribe",
   validateToken,
