@@ -30,32 +30,36 @@ const getMainPageRecipes = async (req, res) => {
   res.json(Object.values(result));
 };
 
-const getRecipesByQuery = async (req, res) => {
-  const { page = 1, limit = 8, category, id } = req.query;
+const getRecipesByCategory = async (req, res) => {
+  const { page = 1, limit = 8 } = req.query;
+  const { name } = req.params;
   const skip = (page - 1) * limit;
-  if (category && id) {
-    throw HttpError(400);
-  }
-  if (!category) {
-    const data = await Recipe.aggregate([
-      { $match: { _id: ObjectId(id) } },
-      {
-        $lookup: {
-          from: "ingredients",
-          localField: "ingredients._id",
-          foreignField: "_id",
-          as: "ingredients",
-        },
-      },
-    ]);
-    return res.json(data);
-  }
-  const data = await Recipe.find({ category }, [], {
+  console.log(req.params);
+  const data = await Recipe.find({ category: name }, [], {
     skip,
     limit,
   });
-
+  if (data.length === 0) {
+    throw HttpError(400);
+  }
   res.json(data);
+};
+
+const getRecipeById = async (req, res) => {
+  const { id } = req.params;
+
+  const data = await Recipe.aggregate([
+    { $match: { _id: ObjectId(id) } },
+    {
+      $lookup: {
+        from: "ingredients",
+        localField: "ingredients._id",
+        foreignField: "_id",
+        as: "ingredients",
+      },
+    },
+  ]);
+  return res.json(data);
 };
 
 const getRecipesByTitle = async (req, res) => {
@@ -263,6 +267,7 @@ const removeFromFavorite = async (req, res) => {
   const idToString = req.user._id.toString();
   const { recipeId } = req.params;
   const recipe = await Recipe.findById(recipeId);
+
   const isRecipeLiked = await recipe.usersWhoLiked
     .map((obj) => obj.userId.toString())
     .includes(idToString);
@@ -425,7 +430,8 @@ const removeFromShoppingList = async (req, res) => {
 
 module.exports = {
   getMainPageRecipes: ctrlWrapper(getMainPageRecipes),
-  getRecipesByQuery: ctrlWrapper(getRecipesByQuery),
+  getRecipeById: ctrlWrapper(getRecipeById),
+  getRecipesByCategory: ctrlWrapper(getRecipesByCategory),
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
   getOwnRecipes: ctrlWrapper(getOwnRecipes),

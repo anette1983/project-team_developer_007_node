@@ -18,7 +18,9 @@ router.get("/category-list", validateToken, getCategoriesList);
 
 router.get("/main-page", validateToken, ctrl.getMainPageRecipes);
 
-router.get("/", ctrl.getRecipesByQuery);
+router.get("/:id", ctrl.getRecipeById);
+
+router.get("/category/:name", ctrl.getRecipesByCategory);
 
 router.get("/search", validateToken, ctrl.getRecipesByTitle);
 
