@@ -108,7 +108,7 @@ const getOwnRecipes = async (req, res) => {
   const id = req.user._id;
   const total = await Recipe.find({ owner: id }).countDocuments({});
   const data = await Recipe.find({ owner: id }, [], { skip, limit });
-  res.json({ total, recipes: { ...data } });
+  res.json({ total, recipes: [...data] });
 };
 
 const addRecipe = async (req, res) => {
@@ -156,7 +156,7 @@ const getFavorite = async (req, res) => {
   if (data === []) {
     throw HttpError(404, "nothing found");
   }
-  res.json({ total, recipes: { ...data } });
+  res.json({ total, recipes: [...data] });
 };
 
 const addToFavorite = async (req, res) => {
@@ -219,7 +219,7 @@ const getPopular = async (req, res) => {
     { $project: { totalAdded: 1, title: 1, preview: 1 } },
   ]);
 
-  res.json({ total, recipes: { ...data } });
+  res.json({ total, recipes: [...data] });
 };
 
 const getShoppingList = async (req, res) => {
@@ -244,6 +244,7 @@ const getShoppingList = async (req, res) => {
     },
   ]);
   const totalCount = Object.values(total[0]);
+
   const data = await User.aggregate([
     { $match: { _id: id } },
     {
@@ -271,6 +272,7 @@ const addToShoppingList = async (req, res) => {
   ]);
   const shoppingList = aggregatedData[0].shoppingList;
   const isAdded = [];
+
   shoppingList.map((e) => {
     if (e.ingredientId.toString() === ingredientId) {
       isAdded.push(true);
@@ -280,6 +282,7 @@ const addToShoppingList = async (req, res) => {
   if (isAdded.includes(true)) {
     throw HttpError(409, "you already have this ingredient");
   }
+
   await User.findOneAndUpdate(
     { _id: id },
     {
