@@ -110,26 +110,31 @@ const logout = async (req, res) => {
 };
 
 const updateUserSubscription = async (req, res) => {
-  const { _id, subscription, email } = req.user;
+  const { _id, subscriptionEmail } = req.user;
+  const { email } = req.body;
 
-  if (subscription) {
+  if (subscriptionEmail) {
     HttpError(409, "You have already subscribed");
   }
 
-  await User.findByIdAndUpdate(_id, { subscription: true }, { new: true });
+  await User.findByIdAndUpdate(
+    _id,
+    { subscriptionEmail: email },
+    { new: true }
+  );
 
   const emailHtml = createSubscriptionEmail({
     BASE_URL,
     email,
   });
 
-  const subscriptionEmail = {
+  const subscriptionConfirmationEmail = {
     to: email,
     subject: "So Yummy newsletter",
     html: emailHtml,
   };
 
-  await sendEmail(subscriptionEmail);
+  await sendEmail(subscriptionConfirmationEmail);
 
   res
     .status(200)
