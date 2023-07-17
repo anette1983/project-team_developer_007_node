@@ -10,7 +10,6 @@ const {
   upload,
   cloudinaryUpload,
 } = require("../../middlewares");
-// const { schemas } = require("../../models/user");
 
 const router = express.Router();
 

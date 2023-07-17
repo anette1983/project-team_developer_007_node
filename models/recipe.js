@@ -31,7 +31,7 @@ const recipeSchema = new Schema(
     },
     area: {
       type: String,
-      // required: [true, "Set area of recipe"],
+     
     },
     instructions: {
       type: String,
@@ -43,7 +43,7 @@ const recipeSchema = new Schema(
     },
     thumb: {
       type: String,
-      // required: [true, "Set thumb link for recipe"],
+     
     },
     time: {
       type: String,
@@ -51,11 +51,11 @@ const recipeSchema = new Schema(
     },
     youtube: {
       type: String,
-      // required: [true, "Set youtube link for recipe"],
+      
     },
     preview: {
       type: String,
-      // required: [true, "Set preview link for recipe"],
+      
     },
     tags: [String],
     ingredients: {
