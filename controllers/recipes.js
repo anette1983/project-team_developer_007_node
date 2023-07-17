@@ -359,6 +359,7 @@ const getShoppingList = async (req, res) => {
 
   res.json({ total: totalCount[0], list: [...shoppingList] });
 };
+
 const addToShoppingList = async (req, res) => {
   const id = req.user._id;
   const { ingredientId, measure } = req.body;
@@ -390,6 +391,7 @@ const addToShoppingList = async (req, res) => {
   const response = await Ingredient.findById({ _id: ingredientId });
   res.json(response);
 };
+
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
   const { ingredientId } = req.params;
