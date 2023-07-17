@@ -369,6 +369,7 @@ const getShoppingList = async (req, res) => {
 
   res.json({ total: totalCount[0], list: [...data] });
 };
+
 const addToShoppingList = async (req, res) => {
   const id = req.user._id;
   const { ingredientId, measure } = req.body;
@@ -401,6 +402,7 @@ const addToShoppingList = async (req, res) => {
 
   res.json({ ...response._doc, measure: [measure] });
 };
+
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
   const { ingredientId } = req.params;
