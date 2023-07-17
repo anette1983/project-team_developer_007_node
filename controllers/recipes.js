@@ -3,8 +3,8 @@ const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
-const { default: mongoose } = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+// const { default: mongoose } = require("mongoose");
+// const ObjectId = mongoose.Types.ObjectId;
 
 const getMainPageRecipes = async (req, res) => {
   const result = [];
@@ -326,17 +326,28 @@ const getShoppingList = async (req, res) => {
           {
             $match: { _id: id },
           },
+          { $unwind: "$shoppingList" },
+
           {
             $lookup: {
               from: "ingredients",
               localField: "shoppingList.ingredientId",
               foreignField: "_id",
-              as: "shoppingList",
+              as: "shoppingListDescr",
             },
           },
+          {
+            $project: {
+              ingredient: {
+                $arrayElemAt: ["$shoppingListDescr", 0],
+              },
+              measure: "$shoppingList.measure",
+            },
+          },
+
           { $skip: Number(skip) },
           { $limit: Number(limit) },
-          { $project: { shoppingList: 1, _id: 0 } },
+          { $project: { ingredient: 1, measure: 1, _id: 0 } },
         ],
         total: [
           {
@@ -351,13 +362,12 @@ const getShoppingList = async (req, res) => {
     },
   ]);
 
-  if (data[0].shoppingList.length === 0) {
+  if (data.length === 0) {
     throw HttpError(404, "no ingredients found");
   }
   const totalCount = Object.values(total[0]);
-  const shoppingList = data[0].shoppingList;
 
-  res.json({ total: totalCount[0], list: [...shoppingList] });
+  res.json({ total: totalCount[0], list: [...data] });
 };
 const addToShoppingList = async (req, res) => {
   const id = req.user._id;
@@ -388,7 +398,8 @@ const addToShoppingList = async (req, res) => {
     { new: true }
   );
   const response = await Ingredient.findById({ _id: ingredientId });
-  res.json(response);
+
+  res.json({ ...response._doc, measure: [measure] });
 };
 const removeFromShoppingList = async (req, res) => {
   const id = req.user._id;
