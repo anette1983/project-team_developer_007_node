@@ -4,24 +4,6 @@ const Joi = require("joi");
 const { handleMongooseError } = require("../helpers");
 const { emailRegexp } = require("../constants/user");
 
-// const shoppingListSchema = new Schema({
-//   _id: false,
-//   type: [
-//     {
-//       ingredientId: {
-//         type: Schema.Types.ObjectId,
-//         ref: "ingredient",
-//       },
-
-//       measure: {
-//         type: [String],
-//         default: [],
-//       },
-//     },
-//   ],
-//   default: [],
-// });
-
 const userSchema = new Schema(
   {
     name: {

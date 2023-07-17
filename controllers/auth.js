@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { nanoid } = require("nanoid");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs")
 
 const cloudinary = require("../utils/cloudinary");
 
@@ -18,8 +18,6 @@ const {
 const { Recipe } = require("../models/recipe");
 
 const { SECRET, BASE_URL } = process.env;
-
-// const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
