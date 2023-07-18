@@ -31,7 +31,6 @@ const recipeSchema = new Schema(
     },
     area: {
       type: String,
-     
     },
     instructions: {
       type: String,
@@ -43,7 +42,6 @@ const recipeSchema = new Schema(
     },
     thumb: {
       type: String,
-     
     },
     time: {
       type: String,
@@ -51,11 +49,9 @@ const recipeSchema = new Schema(
     },
     youtube: {
       type: String,
-      
     },
     preview: {
       type: String,
-      
     },
     tags: [String],
     ingredients: {
@@ -87,11 +83,19 @@ const addToFavoriteSchema = Joi.object({ recipeId: Joi.string().required() });
 
 const addToShoppingListSchema = Joi.object({
   ingredientId: Joi.string().required(),
-  measure: Joi.string().required(),
+  measure: Joi.string().required().messages({
+    "string.base": "The measure must be a string.",
+    "any.required": "The measure field is required.",
+    "string.empty": "The measure must not be empty",
+  }),
 });
 
 const addRecipeSchema = Joi.object({
-  title: Joi.string().required(),
+  title: Joi.string().required().messages({
+    "string.base": "The title must be a string.",
+    "any.required": "The title field is required.",
+    "string.empty": "The title must not be empty",
+  }),
   category: Joi.string()
     .valid(
       "Seafood",
@@ -111,11 +115,28 @@ const addRecipeSchema = Joi.object({
       "Vegetarian"
     )
     .required(),
-  instructions: Joi.string().required(),
-  description: Joi.string().required(),
-  time: Joi.string().required(),
-  preview: Joi.string().required(),
-  ingredients: Joi.string().required(),
+  instructions: Joi.string().required().messages({
+    "string.base": "The instructions must be a string.",
+    "any.required": "The instructions field is required.",
+    "string.empty": "The instructions must not be empty",
+  }),
+  description: Joi.string().required().messages({
+    "string.base": "The description must be a string.",
+    "any.required": "The description field is required.",
+    "string.empty": "The description must not be empty",
+  }),
+  time: Joi.string().required().messages({
+    "string.base": "The time must be a string.",
+    "any.required": "The time field is required.",
+    "string.empty": "The time must not be empty",
+  }),
+  preview: Joi.string().required().messages({
+    "any.required": "The preview field is required.",
+    "string.empty": "The preview must not be empty",
+  }),
+  ingredients: Joi.string().required().messages({
+    "array.empty": "The ingredients must not be empty",
+  }),
 });
 
 const recipeSchemas = {
