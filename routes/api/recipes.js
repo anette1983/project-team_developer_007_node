@@ -1,6 +1,8 @@
 const express = require("express");
 
-const ctrl = require("../../controllers/recipes");
+const ctrlRecipes = require("../../controllers/recipes");
+const ctrlUser = require("../../controllers/user");
+
 const { getIngredientsList } = require("../../controllers/ingredients");
 const { getCategoriesList } = require("../../controllers/categories");
 const { recipeSchemas } = require("../../models/recipe");
@@ -15,17 +17,17 @@ const router = express.Router();
 
 router.get("/category-list", validateToken, getCategoriesList);
 
-router.get("/main-page", validateToken, ctrl.getMainPageRecipes);
+router.get("/main-page", validateToken, ctrlRecipes.getMainPageRecipes);
 
-router.get("/category/:name", validateToken, ctrl.getRecipesByCategory);
+router.get("/category/:name", validateToken, ctrlRecipes.getRecipesByCategory);
 
-router.get("/search", validateToken, ctrl.getRecipesByTitle);
+router.get("/search", validateToken, ctrlRecipes.getRecipesByTitle);
 
-router.get("/ingredients", validateToken, ctrl.getRecipesByIngredient);
+router.get("/ingredients", validateToken, ctrlRecipes.getRecipesByIngredient);
 
 router.get("/ingredients/list", validateToken, getIngredientsList);
 
-router.get("/own-recipes", validateToken, ctrl.getOwnRecipes);
+router.get("/own-recipes", validateToken, ctrlRecipes.getOwnRecipes);
 
 router.post(
   "/own-recipes",
@@ -33,39 +35,47 @@ router.post(
   upload.single("preview"),
   cloudinaryUpload,
   validateBody(recipeSchemas.addRecipeSchema),
-  ctrl.addRecipe
+  ctrlRecipes.addRecipe
 );
 
-router.delete("/own-recipes/:recipeId", validateToken, ctrl.deleteRecipe);
+router.delete(
+  "/own-recipes/:recipeId",
+  validateToken,
+  ctrlRecipes.deleteRecipe
+);
 
-router.get("/favorite", validateToken, ctrl.getFavorite);
+router.get("/favorite", validateToken, ctrlRecipes.getFavorite);
 
 router.post(
   "/favorite",
   validateBody(recipeSchemas.addToFavoriteSchema),
   validateToken,
-  ctrl.addToFavorite
+  ctrlRecipes.addToFavorite
 );
 
-router.delete("/favorite/:recipeId", validateToken, ctrl.removeFromFavorite);
+router.delete(
+  "/favorite/:recipeId",
+  validateToken,
+  ctrlRecipes.removeFromFavorite
+);
 
-router.get("/popular-recipe", validateToken, ctrl.getPopular);
+router.get("/popular-recipe", validateToken, ctrlRecipes.getPopular);
 
-router.get("/shopping-list", validateToken, ctrl.getShoppingList);
+router.get("/shopping-list", validateToken, ctrlUser.getShoppingList);
 
 router.post(
   "/shopping-list",
   validateBody(recipeSchemas.addToShoppingListSchema),
   validateToken,
-  ctrl.addToShoppingList
+  ctrlUser.addToShoppingList
 );
 
 router.delete(
   "/shopping-list/:ingredientId",
   validateToken,
-  ctrl.removeFromShoppingList
+  ctrlUser.removeFromShoppingList
 );
 
-router.get("/:id", validateToken, ctrl.getRecipeById);
+router.get("/:id", validateToken, ctrlRecipes.getRecipeById);
 
 module.exports = router;
