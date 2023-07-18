@@ -291,7 +291,9 @@ const getPopular = async (req, res) => {
           },
           { $skip: Number(skip) },
           { $limit: Number(limit) },
-          { $project: { totalAdded: 1, title: 1, preview: 1 } },
+          {
+            $project: { totalAdded: 1, title: 1, preview: 1, instructions: 1 },
+          },
         ],
         total: [
           {
