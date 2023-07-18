@@ -1,10 +1,7 @@
-/* eslint-disable array-callback-return */
 const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Ingredient } = require("../models/ingredient");
-// const { default: mongoose } = require("mongoose");
-// const ObjectId = mongoose.Types.ObjectId;
 
 const getMainPageRecipes = async (req, res) => {
   const result = [];
@@ -34,7 +31,7 @@ const getRecipesByCategory = async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
   const { name } = req.params;
   const skip = (page - 1) * limit;
-  console.log(req.params);
+
   const data = await Recipe.find({ category: name }, [], {
     skip,
     limit,
@@ -191,7 +188,7 @@ const deleteRecipe = async (req, res) => {
   if (result.deletedCount === 0) {
     throw HttpError(404, "Not found");
   }
-  res.status(200).json({ id: recipeId ,message: "recipe deleted"});
+  res.status(200).json({ id: recipeId, message: "Recipe deleted" });
 };
 
 const getFavorite = async (req, res) => {
@@ -251,7 +248,7 @@ const addToFavorite = async (req, res) => {
   await Recipe.findByIdAndUpdate(recipeId, {
     $push: { usersWhoLiked: { userId: id } },
   });
-  res.json(201, "recipe added");
+  res.json(201, "Added to favorite recipes");
 };
 
 const removeFromFavorite = async (req, res) => {
@@ -270,7 +267,7 @@ const removeFromFavorite = async (req, res) => {
   await Recipe.findByIdAndUpdate(recipeId, {
     $pull: { usersWhoLiked: { userId: id } },
   });
-  res.json(201, "recipe deleted");
+  res.json(200, "Recipe deleted");
 };
 
 const getPopular = async (req, res) => {

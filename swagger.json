@@ -90,7 +90,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
@@ -151,7 +157,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
@@ -189,7 +201,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
@@ -220,12 +238,18 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/verify/{verificationToken}": {
+    "/users/verify/{verificationToken}": {
       "get": {
         "tags": ["Auth"],
         "summary": "Verify token",
@@ -273,12 +297,18 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/verify": {
+    "/users/verify": {
       "post": {
         "tags": ["Auth"],
         "summary": "Resend email verify",
@@ -339,12 +369,18 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/information": {
+    "/users/information": {
       "get": {
         "tags": ["Auth"],
         "summary": "Information User",
@@ -377,12 +413,18 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/unsubscribe/{userEmail}": {
+    "/users/unsubscribe/{userEmail}": {
       "get": {
         "tags": ["Auth"],
         "summary": "Verify token",
@@ -420,12 +462,18 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/subscribe": {
+    "/users/subscribe": {
       "patch": {
         "tags": ["Auth"],
         "summary": "Update User Subscription",
@@ -505,7 +553,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -515,8 +569,7 @@
         ]
       }
     },
-
-    "/userinfoupd": {
+    "/users/userinfoupd": {
       "patch": {
         "tags": ["Auth"],
         "summary": "Update User Info",
@@ -580,7 +633,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -594,7 +653,7 @@
     "/api/recipes/category-list": {
       "get": {
         "tags": ["Recipes"],
-        "summary": "Recipes list",
+        "summary": "The list of dishes by category",
         "parameters": [],
         "responses": {
           "200": {
@@ -620,9 +679,25 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -664,9 +739,25 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -676,7 +767,7 @@
         ]
       }
     },
-    "/api/recipes/recipe/{id}": {
+    "/api/recipes/{id}": {
       "get": {
         "tags": ["Recipes"],
         "summary": "Recipe",
@@ -717,24 +808,24 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "No recipes found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/NotFound"
                 }
               }
             }
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -788,24 +879,24 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "No recipes found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/NotFound"
                 }
               }
             }
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -867,7 +958,7 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "No recipes found",
             "content": {
               "application/json": {
                 "schema": {
@@ -875,7 +966,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No recipes found"
+                      "example": "no recipes found"
                     }
                   }
                 }
@@ -884,7 +975,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -946,7 +1043,7 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "No recipes found",
             "content": {
               "application/json": {
                 "schema": {
@@ -954,7 +1051,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No recipes found"
+                      "example": "no recipes found"
                     }
                   }
                 }
@@ -963,7 +1060,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1002,9 +1105,25 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1052,7 +1171,7 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "No recipes found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1060,7 +1179,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No recipes found"
+                      "example": "no recipes found"
                     }
                   }
                 }
@@ -1069,7 +1188,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1117,7 +1242,7 @@
             }
           },
           "404": {
-            "description": "no recipes found",
+            "description": "No recipes found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1125,7 +1250,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No recipes found"
+                      "example": "no recipes found"
                     }
                   }
                 }
@@ -1134,7 +1259,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1189,9 +1320,25 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1248,24 +1395,24 @@
             }
           },
           "404": {
-            "description": "No recipe found",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "No recipe found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/NotFound"
                 }
               }
             }
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1321,7 +1468,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No recipes found"
+                      "example": "no recipes found"
                     }
                   }
                 }
@@ -1330,7 +1477,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1397,6 +1550,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "409": {
             "description": "Recipe already liked",
             "content": {
@@ -1415,7 +1578,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1472,24 +1641,24 @@
             }
           },
           "404": {
-            "description": "No recipe found",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "No recipe found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/NotFound"
                 }
               }
             }
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1545,7 +1714,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "No ingredients found"
+                      "example": "no ingredients found"
                     }
                   }
                 }
@@ -1554,7 +1723,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1594,7 +1769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RecipeItem"
+                  "$ref": "#/components/schemas/ResponseIngredientFromShoppingList"
                 }
               }
             }
@@ -1619,6 +1794,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
           "409": {
             "description": "You already have this ingredient",
             "content": {
@@ -1637,7 +1822,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1694,17 +1885,11 @@
             }
           },
           "404": {
-            "description": "No ingredient found",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "No ingredient found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/NotFound"
                 }
               }
             }
@@ -1727,7 +1912,13 @@
           },
           "500": {
             "description": "Server error",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1954,6 +2145,28 @@
           }
         }
       },
+      "ResponseIngredientFromShoppingList": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "_id",
+            "example": "6462a6cd4c3d0ddd28897f8e"
+          },
+          "name": {
+            "type": "string",
+            "description": "category name",
+            "example": "Beef"
+          },
+          "measure": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "0.5 weight"
+            }
+          }
+        }
+      },
       "RecipeItemForMainPage": {
         "type": "object",
         "properties": {
@@ -2122,6 +2335,26 @@
             "type": "string",
             "description": "preview img",
             "example": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560630/udf2g6mv8gm0eqvqylha.jpg"
+          }
+        }
+      },
+      "NotFound": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Not found",
+            "example": "Not found"
+          }
+        }
+      },
+      "ServerError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Server error",
+            "example": "Server error"
           }
         }
       }
