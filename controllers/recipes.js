@@ -191,7 +191,7 @@ const deleteRecipe = async (req, res) => {
   if (result.deletedCount === 0) {
     throw HttpError(404, "Not found");
   }
-  res.status(200).json({ message: "recipe deleted" });
+  res.status(200).json({ id: recipeId ,message: "recipe deleted"});
 };
 
 const getFavorite = async (req, res) => {
