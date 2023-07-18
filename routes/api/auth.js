@@ -5,7 +5,7 @@ const ctrl = require("../../controllers/auth");
 const {
   validateBody,
   validateToken,
-  upload,
+  uploadImage,
   cloudinaryUpload,
 } = require("../../middlewares");
 
@@ -30,8 +30,7 @@ router.get("/unsubscribe/:userEmail", ctrl.unsubscribe);
 router.patch(
   "/userinfoupd",
   validateToken,
-  upload.single("avatar"),
-  cloudinaryUpload,
+  uploadImage("avatar"),
   ctrl.upadateUserInfo
 );
 

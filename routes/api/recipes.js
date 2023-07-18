@@ -9,8 +9,7 @@ const { recipeSchemas } = require("../../models/recipe");
 const {
   validateToken,
   validateBody,
-  upload,
-  cloudinaryUpload,
+  uploadImage,
 } = require("../../middlewares");
 
 const router = express.Router();
@@ -32,8 +31,7 @@ router.get("/own-recipes", validateToken, ctrlRecipes.getOwnRecipes);
 router.post(
   "/own-recipes",
   validateToken,
-  upload.single("preview"),
-  cloudinaryUpload,
+  uploadImage("preview"),
   validateBody(recipeSchemas.addRecipeSchema),
   ctrlRecipes.addRecipe
 );
