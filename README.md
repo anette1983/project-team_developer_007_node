@@ -12,7 +12,7 @@ Welcome to the **Project Team Developer 007 Node** repository! This repository c
 
 ## Introduction
 
-The **Project Team Developer 007 Node** is a Node.js project developed by our team to address a specific need or problem. This repository serves as the central hub for the project, containing all the source code, documentation, and other relevant files.
+The **Project Team Developer 007 Node** is a Node.js project developed by our team to address a specific need of recipes app. This repository serves as the central hub for the project, containing all the source code, documentation, and other relevant files.
 
 ## Installation
 
@@ -21,20 +21,11 @@ To use this project locally, please follow these steps:
 1. Clone the repository to your local machine using the following command:
 git clone https://github.com/SergSmilya/project-team_developer_007_node.git
 
-vbnet
-Copy code
-
 2. Navigate to the project's directory:
 cd project-team_developer_007_node
 
-arduino
-Copy code
-
 3. Install the project dependencies using npm:
 npm install
-
-vbnet
-Copy code
 
 Congratulations! You have successfully installed the project and its dependencies on your local machine.
 
@@ -49,9 +40,6 @@ To use the project, follow these steps:
 3. Start the Node.js server:
 npm start
 
-vbnet
-Copy code
-
 4. Access the application by navigating to `http://localhost:3000` in your web browser.
 
 Feel free to explore the project and its functionality. If you encounter any issues or have questions, please refer to the project's issue tracker on GitHub.
@@ -65,22 +53,13 @@ We welcome contributions to improve the **Project Team Developer 007 Node** proj
 2. Create a new branch with a descriptive name:
 git checkout -b my-new-feature
 
-sql
-Copy code
-
 3. Make your desired changes to the codebase.
 
 4. Commit your changes with an appropriate commit message:
 git commit -am 'Add some feature'
 
-css
-Copy code
-
 5. Push your branch to your forked repository:
 git push origin my-new-feature
-
-yaml
-Copy code
 
 6. Open a new pull request on the original repository and describe your changes in detail.
 
@@ -88,7 +67,7 @@ We appreciate your contributions and will review your pull request as soon as po
 
 ## License
 
-The **Project Team Developer 007 Node** project is licensed under the [MIT License](LICENSE). Please refer to the `LICENSE` file for more details.
+The **Project Team Developer 007 Node** project is licensed under the [MIT License](LICENSE).
 
 ---
 
