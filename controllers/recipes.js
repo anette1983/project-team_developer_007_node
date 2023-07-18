@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 const { Recipe } = require("../models/recipe");
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
