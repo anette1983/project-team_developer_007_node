@@ -108,7 +108,7 @@ const updateUserSubscription = async (req, res) => {
   const { _id, subscriptionEmail } = req.user;
   const { email } = req.body;
 
-  if (subscriptionEmail) {
+  if (subscriptionEmail === email) {
     throw HttpError(409, "You have already subscribed");
   }
 
