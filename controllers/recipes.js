@@ -35,9 +35,9 @@ const getRecipesByCategory = async (req, res) => {
     skip,
     limit,
   });
-  if (data.length === 0) {
-    throw HttpError(400);
-  }
+  // if (data.length === 0) {
+  //   throw HttpError(400);
+  // }
   res.json(data);
 };
 
@@ -85,7 +85,9 @@ const getRecipesByTitle = async (req, res) => {
     },
   ]);
   if (data.length === 0) {
-    throw HttpError(404, "no recipes found");
+    // throw HttpError(404, "no recipes found");
+    res.json([])
+    return
   }
   const totalCount = Object.values(total[0]);
 
@@ -101,6 +103,7 @@ const getRecipesByIngredient = async (req, res) => {
   ]);
   if (ingredients.length === 0) {
     throw HttpError(404, "no recipes found");
+
   }
 
   const [{ data, total }] = await Recipe.aggregate([
@@ -136,7 +139,9 @@ const getRecipesByIngredient = async (req, res) => {
   ]);
 
   if (data.length === 0) {
-    throw HttpError(404, "no recipes found");
+    // throw HttpError(404, "no recipes found");
+    res.json([])
+    return
   }
   const totalCount = Object.values(total[0]);
 
@@ -162,7 +167,9 @@ const getOwnRecipes = async (req, res) => {
   ]);
 
   if (data.length === 0) {
-    throw HttpError(404, "no recipes found");
+    // throw HttpError(404, "no recipes found");
+    res.json([]);
+    return;
   }
 
   const totalCount = Object.values(total[0]);
@@ -223,9 +230,11 @@ const getFavorite = async (req, res) => {
     },
   ]);
 
-  if (data.length === 0) {
-    throw HttpError(404, "no recipes found");
-  }
+ if (data.length === 0) {
+   // throw HttpError(404, "no recipes found");
+   res.json([]);
+   return;
+ }
 
   const totalCount = Object.values(total[0]);
 
@@ -247,7 +256,7 @@ const addToFavorite = async (req, res) => {
   await Recipe.findByIdAndUpdate(recipeId, {
     $push: { usersWhoLiked: { userId: id } },
   });
-  res.json(201, "Added to favorite recipes");
+  res.status(201).json( {message:"Added to favorite recipes", id: id});
 };
 
 const removeFromFavorite = async (req, res) => {
@@ -266,7 +275,7 @@ const removeFromFavorite = async (req, res) => {
   await Recipe.findByIdAndUpdate(recipeId, {
     $pull: { usersWhoLiked: { userId: id } },
   });
-  res.json(200, "Recipe deleted");
+  res.status(200).json({message: "Recipe deleted", id:id});
 };
 
 const getPopular = async (req, res) => {
@@ -305,7 +314,9 @@ const getPopular = async (req, res) => {
   ]);
 
   if (data.length === 0) {
-    throw HttpError(404, "no recipes found");
+    // throw HttpError(404, "no recipes found");
+    res.json([]);
+    return;
   }
   const totalCount = Object.values(total[0]);
 

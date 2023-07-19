@@ -3,9 +3,6 @@ const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { nanoid } = require("nanoid");
 const path = require("path");
-const fs = require("fs")
-
-const cloudinary = require("../utils/cloudinary");
 
 const { User } = require("../models/user");
 const {
