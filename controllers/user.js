@@ -53,7 +53,8 @@ const getShoppingList = async (req, res) => {
   ]);
 
   if (data.length === 0) {
-    throw HttpError(404, "no ingredients found");
+    res.json([])
+    // throw HttpError(404, "no ingredients found");
   }
   const totalCount = Object.values(total[0]);
 
