@@ -54,6 +54,7 @@ const getShoppingList = async (req, res) => {
 
   if (data.length === 0) {
     res.json({total: 0, list:[]})
+    return
   }
   const totalCount = Object.values(total[0]);
 
