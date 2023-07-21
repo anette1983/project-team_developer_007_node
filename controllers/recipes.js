@@ -270,12 +270,12 @@ const removeFromFavorite = async (req, res) => {
     .includes(idToString);
 
   if (!isRecipeLiked) {
-    throw HttpError(409, "recipe is not in your favorite list");
+    throw HttpError(409, "recipe is not favorite in your favorite list");
   }
   await Recipe.findByIdAndUpdate(recipeId, {
     $pull: { usersWhoLiked: { userId: id } },
   });
-  res.status(200).json({message: "Recipe deleted", id:id});
+  res.status(200).json({ message: "Recipe deleted", id: recipeId });
 };
 
 const getPopular = async (req, res) => {
