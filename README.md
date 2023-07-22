@@ -5,7 +5,7 @@ Welcome to the **Project Team Developer 007 Node** repository! This repository c
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Documentation](https://so-yummy-project.onrender.com/api-docs/#/)
+- [Documentation](#Documentation)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -14,6 +14,10 @@ Welcome to the **Project Team Developer 007 Node** repository! This repository c
 ## Introduction
 
 The **Project Team Developer 007 Node** is a Node.js project developed by our team to address a specific need of recipes app. This repository serves as the central hub for the project, containing all the source code, documentation, and other relevant files.
+
+## Documentation
+
+https://so-yummy-project.onrender.com/api-docs/#/
 
 ## Installation
 
