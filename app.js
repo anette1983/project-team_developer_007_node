@@ -10,10 +10,17 @@ const recipesRouter = require("./routes/api/recipes");
 
 const app = express();
 
+// const corsOptions = {
+//   origin: "https://anette1983.github.io/project-team_developer_007_react",
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true, 
+// };
+
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(formatsLogger));
 app.use(cors());
+// app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public"));
 

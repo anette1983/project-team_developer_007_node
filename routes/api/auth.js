@@ -6,7 +6,7 @@ const {
   validateBody,
   validateToken,
   uploadImage,
-  cloudinaryUpload,
+  // cloudinaryUpload,
 } = require("../../middlewares");
 
 const { schemas } = require("../../models/user");
