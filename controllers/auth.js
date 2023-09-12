@@ -151,7 +151,7 @@ const verifyUser = async (req, res) => {
   const user = await User.findOne({ verificationToken });
 
   if (!user) {
-    throw HttpError(404, "User not found");
+    throw HttpError(404, "User is not found or already verified");
   }
 
   await User.findByIdAndUpdate(user._id, {
@@ -188,7 +188,7 @@ const resendVerificationEmail = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="http://localhost:3000/users/verify/${user.verificationToken}">Click verify email</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${user.verificationToken}">Click verify email</a>`,
   };
 
   await sendEmail(verifyEmail);

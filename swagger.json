@@ -16,7 +16,7 @@
   },
   "servers": [
     {
-      "url": "https://so-yummy-project.onrender.com"
+      "url": "https://so-yummy-project-hnb2.onrender.com"
     },
     {
       "url": "https://localhost:3000"

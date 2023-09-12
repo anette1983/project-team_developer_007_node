@@ -17,20 +17,20 @@ The **Project Team Developer 007 Node** is a Node.js project developed by our te
 
 ## Documentation
 
-[Swagger](https://so-yummy-project.onrender.com/api-docs/#/)
+[Swagger](https://so-yummy-project-hnb2.onrender.com/api-docs/#/)
 
 ## Installation
 
 To use this project locally, please follow these steps:
 
 1. Clone the repository to your local machine using the following command:
-git clone https://github.com/anette1983/project-team_developer_007_node.git
+   git clone https://github.com/anette1983/project-team_developer_007_node.git
 
 2. Navigate to the project's directory:
-cd project-team_developer_007_node
+   cd project-team_developer_007_node
 
 3. Install the project dependencies using npm:
-npm install
+   npm install
 
 Congratulations! You have successfully installed the project and its dependencies on your local machine.
 
@@ -43,7 +43,7 @@ To use the project, follow these steps:
 2. Customize the project's configuration according to your requirements. You may need to modify configuration files or environment variables. Refer to the project's documentation for more details on how to configure the application.
 
 3. Start the Node.js server:
-npm start
+   npm start
 
 4. Access the application by navigating to `http://localhost:3000` in your web browser.
 
@@ -56,15 +56,15 @@ We welcome contributions to improve the **Project Team Developer 007 Node** proj
 1. Fork the repository on GitHub.
 
 2. Create a new branch with a descriptive name:
-git checkout -b my-new-feature
+   git checkout -b my-new-feature
 
 3. Make your desired changes to the codebase.
 
 4. Commit your changes with an appropriate commit message:
-git commit -am 'Add some feature'
+   git commit -am 'Add some feature'
 
 5. Push your branch to your forked repository:
-git push origin my-new-feature
+   git push origin my-new-feature
 
 6. Open a new pull request on the original repository and describe your changes in detail.
 
