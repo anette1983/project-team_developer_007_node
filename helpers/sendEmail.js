@@ -7,7 +7,7 @@ const config = {
   port: 465,
   secure: true,
   auth: {
-    user: "maxus195@ukr.net",
+    user: "anna_kon@ukr.net",
     pass: process.env.IMAP_PASS,
   },
 };
@@ -15,7 +15,7 @@ const config = {
 const transporter = nodemailer.createTransport(config);
 
 const sendEmail = async (data) => {
-  const email = { from: "maxus195@ukr.net", ...data };
+  const email = { from: "anna_kon@ukr.net", ...data };
   await transporter.sendMail(email);
   return true;
 };

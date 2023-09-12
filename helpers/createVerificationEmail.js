@@ -1,5 +1,5 @@
 const createVerificationEmail = (data) => {
-  const url = "https://sergsmilya.github.io/project-team_developer_007_react/";
+  const url = "https://anette1983.github.io/project-team_developer_007_react/";
   const html = `<html>
 <head>
 

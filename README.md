@@ -24,7 +24,7 @@ The **Project Team Developer 007 Node** is a Node.js project developed by our te
 To use this project locally, please follow these steps:
 
 1. Clone the repository to your local machine using the following command:
-git clone https://github.com/SergSmilya/project-team_developer_007_node.git
+git clone https://github.com/anette1983/project-team_developer_007_node.git
 
 2. Navigate to the project's directory:
 cd project-team_developer_007_node

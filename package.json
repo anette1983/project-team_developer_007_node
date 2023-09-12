@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SergSmilya/project-team_developer_007_node.git"
+    "url": "git+https://github.com/anette1983/project-team_developer_007_node.git"
   },
   "keywords": [],
   "author": "team-7",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SergSmilya/project-team_developer_007_node/issues"
+    "url": "https://github.com/anette1983/project-team_developer_007_node/issues"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
@@ -49,5 +49,5 @@
     "eslint-plugin-promise": "5.2.0",
     "nodemon": "2.0.15"
   },
-  "homepage": "https://github.com/SergSmilya/project-team_developer_007_node#readme"
+  "homepage": "https://github.com/anette1983/project-team_developer_007_node#readme"
 }
